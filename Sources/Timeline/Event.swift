@@ -15,7 +15,7 @@ public final class Event: EventDescriptor {
     }
     public var backgroundColor = SystemColors.systemBlue.withAlphaComponent(0.3)
     public var textColor = SystemColors.label
-    public var font = UIFont.boldSystemFont(ofSize: 12)
+    public var font = UIFont.systemFont(ofSize: 12, weight: .semibold)
     public var userInfo: Any?
     public weak var editedEvent: EventDescriptor? {
         didSet {
