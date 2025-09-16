@@ -4,11 +4,13 @@ public protocol DaySelectorItemProtocol: AnyObject {
     var date: Date {get set}
     var selected: Bool {get set}
     var calendar: Calendar {get set}
+    var showDot: Bool {get set}
     func updateStyle(_ newStyle: DaySelectorStyle)
 }
 
 public protocol DaySelectorDelegate: AnyObject {
     func dateSelectorDidSelectDate(_ date: Date)
+    func showDotOnDate(_ date: Date) -> Bool
 }
 
 public final class DaySelector: UIView {
@@ -92,7 +94,7 @@ public final class DaySelector: UIView {
             let label = T()
             items.append(label)
             addSubview(label)
-            
+    
             let recognizer = UITapGestureRecognizer(target: self,
                                                     action: #selector(DaySelector.dateLabelDidTap(_:)))
             label.addGestureRecognizer(recognizer)
@@ -105,7 +107,9 @@ public final class DaySelector: UIView {
     
     private func configure() {
         for (increment, label) in items.enumerated() {
-            label.date = calendar.date(byAdding: .day, value: increment, to: startDate)!
+            let lDate = calendar.date(byAdding: .day, value: increment, to: startDate)!
+            label.showDot = self.delegate?.showDotOnDate(lDate) ?? false
+            label.date = lDate
         }
     }
     

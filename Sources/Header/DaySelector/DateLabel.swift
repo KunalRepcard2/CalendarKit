@@ -1,6 +1,8 @@
 import UIKit
 
 public final class DateLabel: UILabel, DaySelectorItemProtocol {
+    public var showDot: Bool = false
+    
     public var calendar = Calendar.autoupdatingCurrent {
         didSet {
             updateState()
@@ -27,7 +29,7 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
     private var style = DaySelectorStyle()
 
     override public var intrinsicContentSize: CGSize {
-        CGSize(width: 35, height: 35)
+        CGSize(width: 40, height: 40)
     }
 
     override init(frame: CGRect) {
@@ -64,6 +66,7 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             textColor = today ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
         }
+        addDotTag(showDot, color: selected ? style.selectedDotColor : style.dotColor)
     }
 
     private func component(component: Calendar.Component, from date: Date) -> Int {
@@ -93,5 +96,33 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
     }
     override public func tintColorDidChange() {
         updateState()
+    }
+}
+
+
+
+public extension UIView  {
+    func addDotTag(_ add: Bool,  color: UIColor) {
+       self.removeDotTag()
+       let dotView = UIView()
+       dotView.backgroundColor = color
+       dotView.layer.cornerRadius = 2
+       dotView.translatesAutoresizingMaskIntoConstraints = false
+       dotView.tag = 67890
+       // Add dot inside the label
+       self.addSubview(dotView)
+
+       NSLayoutConstraint.activate([
+           dotView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+           dotView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2), // little below
+           dotView.widthAnchor.constraint(equalToConstant: 4),
+           dotView.heightAnchor.constraint(equalToConstant: 4)
+       ])
+    }
+    
+    func removeDotTag() {
+        if let tagV = self.viewWithTag(67890) {
+            tagV.removeFromSuperview()
+        }
     }
 }

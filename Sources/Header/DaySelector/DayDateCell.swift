@@ -1,6 +1,7 @@
 import UIKit
 
 public final class DayDateCell: UIView, DaySelectorItemProtocol {
+    public var showDot: Bool = false
     
     private let dateLabel = DateLabel()
     private let dayLabel = UILabel()

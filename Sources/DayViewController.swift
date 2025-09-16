@@ -111,4 +111,8 @@ open class DayViewController: UIViewController, EventDataSource, DayViewDelegate
     open func endEventEditing() {
         dayView.endEventEditing()
     }
+    
+    open func dayView(shouldShowDotAt date: Date) -> Bool {
+        return false
+    }
 }

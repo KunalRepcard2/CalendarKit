@@ -108,7 +108,7 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
         guard newDate != oldDate else {
             return
         }
-        labels.last!.text = formattedDate(date: newDate)
+        labels.last!.text = formattedDate(date: newDate) + ">"
 
         var direction: AnimationDirection = newDate > oldDate ? .Forward : .Backward
 

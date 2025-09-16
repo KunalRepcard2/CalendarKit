@@ -39,6 +39,10 @@ public struct DaySelectorStyle {
     public var todayActiveTextColor = UIColor.white
     public var todayActiveBackgroundColor = SystemColors.systemRed
     
+    
+    public var dotColor = UIColor(hex: "3F3F46")
+    public var selectedDotColor = UIColor(hex: "FFFFFF")
+    
     public var font = UIFont.systemFont(ofSize: 18)
     public var todayFont = UIFont.boldSystemFont(ofSize: 18)
 

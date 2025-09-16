@@ -1,11 +1,16 @@
 import UIKit
 
+protocol DayHeaderViewDelegate: AnyObject {
+    func shouldShowDotOn(date: Date) -> Bool
+}
+
 public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdating, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     public private(set) var daysInWeek = 7
     public let calendar: Calendar
 
     private var style = DayHeaderStyle()
     private var currentSizeClass = UIUserInterfaceSizeClass.compact
+    var headerDelegate: DayHeaderViewDelegate?
 
     public weak var state: DayViewState? {
         willSet(newValue) {
@@ -20,7 +25,7 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
     private var currentWeekdayIndex = -1
 
     private var daySymbolsViewHeight: Double = 20
-    private var pagingScrollViewHeight: Double = 40
+    private var pagingScrollViewHeight: Double = 45
     private var swipeLabelViewHeight: Double = 20
 
     private let daySymbolsView: DaySymbolsView
@@ -108,7 +113,7 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
                                       size: CGSize(width: bounds.width, height: daySymbolsViewHeight))
         pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: daySymbolsViewHeight),
                                                   size: CGSize(width: bounds.width, height: pagingScrollViewHeight))
-        swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 10 - swipeLabelViewHeight),
+        swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 5 - swipeLabelViewHeight),
                                       size: CGSize(width: bounds.width, height: swipeLabelViewHeight))
 
         let separatorHeight = 1 / UIScreen.main.scale
@@ -126,6 +131,10 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
 
     public func dateSelectorDidSelectDate(_ date: Date) {
         state?.move(to: date)
+    }
+    
+    public func showDotOnDate(_ date: Date) -> Bool {
+        return self.headerDelegate?.shouldShowDotOn(date: date) ?? false
     }
 
     // MARK: DayViewStateUpdating

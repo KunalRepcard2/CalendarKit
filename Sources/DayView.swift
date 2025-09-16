@@ -10,6 +10,7 @@ public protocol DayViewDelegate: AnyObject {
     func dayView(dayView: DayView, willMoveTo date: Date)
     func dayView(dayView: DayView, didMoveTo  date: Date)
     func dayView(dayView: DayView, didUpdate event: EventDescriptor)
+    func dayView(shouldShowDotAt date: Date) -> Bool
 }
 
 public class DayView: UIView, TimelinePagerViewDelegate {
@@ -38,7 +39,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         timelinePagerView.timelineScrollOffset
     }
     
-    private static let headerVisibleHeight: Double = 88
+    private static let headerVisibleHeight: Double = 95
     public var headerHeight: Double = headerVisibleHeight
     
     public var autoScrollToFirstEvent: Bool {
@@ -106,6 +107,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             newState.move(to: Date())
             state = newState
         }
+        self.dayHeaderView.headerDelegate = self
     }
     
     private func configureLayout() {
@@ -196,5 +198,12 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     }
     public func timelinePager(timelinePager: TimelinePagerView, didUpdate event: EventDescriptor) {
         delegate?.dayView(dayView: self, didUpdate: event)
+    }
+}
+
+
+extension DayView: DayHeaderViewDelegate {
+    func shouldShowDotOn(date: Date) -> Bool {
+        return delegate?.dayView(shouldShowDotAt: date) ?? false
     }
 }
