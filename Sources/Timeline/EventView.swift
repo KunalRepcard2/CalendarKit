@@ -4,6 +4,10 @@ open class EventView: UIView {
     public var descriptor: EventDescriptor?
     public var color = UIColor.systemPink
     
+    var maxFontSize: CGFloat = 12   // upper limit
+    var minFontSize: CGFloat = 8   // lower limit
+    var scaleFactor: CGFloat = 0.3  // % of parent height used as font size
+    
     public var contentHeight: Double {
         textLabel.frame.height
     }
@@ -58,62 +62,76 @@ open class EventView: UIView {
         addSubview(textLabel)
         addSubview(verticalLine)
         textLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            textLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 6)
-//            textLabel.leadingAnchor.constraint(equalTo: verticalLine.trailingAnchor, constant: 6),
-//            textLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6)
-        ])
-        
-        for (idx, handle) in eventResizeHandles.enumerated() {
-            handle.tag = idx
-            addSubview(handle)
-        }
+        //        for (idx, handle) in eventResizeHandles.enumerated() {
+        //            handle.tag = idx
+        //            addSubview(handle)
+        //        }
     }
     
     public func updateWithDescriptor(event: EventDescriptor) {
-        if let attributedText = event.attributedText {
-            textLabel.attributedText = attributedText
-            textLabel.setNeedsLayout()
-        } else {
-            textLabel.text = event.text
-            textLabel.textColor = event.textColor
-            textLabel.font = event.font
-        }
-//        if let lineBreakMode = event.lineBreakMode {
-//            textLabel.textContainer.lineBreakMode = lineBreakMode
-//        }
-        verticalLine.backgroundColor = event.color
         descriptor = event
+        
+        // Update text
+        if let attributedText = event.attributedText {
+            if textLabel.attributedText != attributedText {
+                textLabel.attributedText = attributedText
+            }
+        } else {
+            if textLabel.text != event.text { textLabel.text = event.text }
+            if textLabel.textColor != event.textColor { textLabel.textColor = event.textColor }
+            if textLabel.font != event.font { textLabel.font = event.font }
+        }
+        
+        // Update line
+        if verticalLine.backgroundColor != event.color {
+            verticalLine.backgroundColor = event.color
+        }
+        
+        // Update background
         backgroundColor = .clear
-        layer.backgroundColor = event.backgroundColor.cgColor
         layer.cornerRadius = 4
+        if layer.backgroundColor != event.backgroundColor.withAlphaComponent(0.3).cgColor {
+            layer.backgroundColor = event.backgroundColor.withAlphaComponent(0.3).cgColor
+        }
+        
         color = event.color
-        eventResizeHandles.forEach{
-            $0.borderColor = event.color
-            $0.isHidden = event.editedEvent == nil
-        }
-        drawsShadow = event.editedEvent != nil
         
-        // Add avatars dynamically
-//        let sampleImages = ["user1"] // Replace with asset names
-//        for imgName in sampleImages {
-//            avatarStack.addAvatar(image: UIImage(named: imgName))
-//        }
-        avatarStack.addAvatar(image: UIImage(named: "user1"))
-        addSubview(avatarStack)
+        // Resize handles
+        let shouldShowHandles = event.editedEvent != nil
+        //        for handle in eventResizeHandles {
+        //            handle.borderColor = event.color
+        //            handle.isHidden = !shouldShowHandles
+        //        }
+        drawsShadow = shouldShowHandles
         
+        // Avatars (prevent duplicate stacking)
+        //        if avatarStack.superview == nil {
+        //            avatarStack.addAvatar(image: UIImage(named: "user1"))
+        //            addSubview(avatarStack)
+        //        }
+        
+        // Time off (prevent duplicate stacking)
         if event.isTimeOff {
-            stripedView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            stripedView.stripeColor = event.timeOffColor
-            stripedView.stripeWidth = 6
-            stripedView.stripeSpacing = 6
-            stripedView.angle = .pi / 4
-            addSubview(stripedView)
-            sendSubviewToBack(stripedView) // make it background
+            if stripedView.superview == nil {
+                stripedView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                stripedView.stripeColor = event.timeOffColor
+                stripedView.stripeWidth = 6
+                stripedView.stripeSpacing = 6
+                stripedView.angle = .pi / 4
+                addSubview(stripedView)
+                sendSubviewToBack(stripedView)
+            } else {
+                stripedView.stripeColor = event.timeOffColor
+            }
+        } else {
+            stripedView.removeFromSuperview()
         }
-        setNeedsDisplay()
+        
+        // Refresh layout once
         setNeedsLayout()
+        setNeedsDisplay()
     }
+    
     
     public func animateCreation() {
         transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
@@ -138,11 +156,11 @@ open class EventView: UIView {
      regardless of their position in relation to the Timeline's bounds.
      */
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        for resizeHandle in eventResizeHandles {
-            if let subSubView = resizeHandle.hitTest(convert(point, to: resizeHandle), with: event) {
-                return subSubView
-            }
-        }
+        //        for resizeHandle in eventResizeHandles {
+        //            if let subSubView = resizeHandle.hitTest(convert(point, to: resizeHandle), with: event) {
+        //                return subSubView
+        //            }
+        //        }
         return super.hitTest(point, with: event)
     }
     private var drawsShadow = false
@@ -151,37 +169,46 @@ open class EventView: UIView {
         
         let lineWidth: CGFloat = 4
         verticalLine.frame = CGRect(x: 0, y: 0, width: lineWidth, height: bounds.height)
-        textLabel.frame = CGRect(x: 8, y: 0, width: bounds.width - 8, height: 26)
+        textLabel.frame = CGRect(x: 8, y: 0, width: bounds.width - 8, height: bounds.height > 21 ? 21 : bounds.height)
         stripedView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         avatarStack.frame = CGRect(x: 8, y: textLabel.frame.height + 2, width: bounds.width - 8, height: 26)
-//        textLabel.frame = {
-//            if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {
-//                return CGRect(x: bounds.minX, y: bounds.minY, width: bounds.width - 3, height: bounds.height)
-//            } else {
-//                return CGRect(x: bounds.minX + 8, y: bounds.minY, width: bounds.width - 6, height: bounds.height)
-//            }
-//        }()
-        if frame.minY < 0 {
-            var textFrame = textLabel.frame;
-            textFrame.origin.y = frame.minY * -1;
-            textFrame.size.height += frame.minY;
-            textLabel.frame = textFrame;
-        }
-        let first = eventResizeHandles.first
-        let last = eventResizeHandles.last
-        let radius: Double = 40
-        let yPad: Double =  -radius / 2
-        let width = bounds.width
-        let height = bounds.height
-        let size = CGSize(width: radius, height: radius)
-        first?.frame = CGRect(origin: CGPoint(x: width - radius - layoutMargins.right, y: yPad),
-                              size: size)
-        last?.frame = CGRect(origin: CGPoint(x: layoutMargins.left, y: height - yPad - radius),
-                             size: size)
         
+        //        textLabel.frame = {
+        //            if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {
+        //                return CGRect(x: bounds.minX, y: bounds.minY, width: bounds.width - 3, height: bounds.height)
+        //            } else {
+        //                return CGRect(x: bounds.minX + 8, y: bounds.minY, width: bounds.width - 6, height: bounds.height)
+        //            }
+        //        }()
+        //        if frame.minY < 0 {
+        //            var textFrame = textLabel.frame;
+        //            textFrame.origin.y = frame.minY * -1;
+        //            textFrame.size.height += frame.minY;
+        //            textLabel.frame = textFrame;
+        //        }
+        //        let first = eventResizeHandles.first
+        //        let last = eventResizeHandles.last
+        //        let radius: Double = 40
+        //        let yPad: Double =  -radius / 2
+        //        let width = bounds.width
+        //        let height = bounds.height
+        //        let size = CGSize(width: radius, height: radius)
+        //        first?.frame = CGRect(origin: CGPoint(x: width - radius - layoutMargins.right, y: yPad),
+        //                              size: size)
+        //        last?.frame = CGRect(origin: CGPoint(x: layoutMargins.left, y: height - yPad - radius),
+        //                             size: size)
+        //        
         if drawsShadow {
             applySketchShadow(alpha: 0.13,
                               blur: 10)
+        }
+        
+        let parentHeight = bounds.height
+        // Calculate font size relative to parent height
+        let newSize = max(minFontSize, min(maxFontSize, parentHeight * scaleFactor))
+        
+        if textLabel.font.pointSize != newSize {
+            textLabel.font = textLabel.font.withSize(newSize)
         }
     }
     
@@ -266,7 +293,6 @@ class StripedBackgroundView: UIView {
     }
 }
 
-
 class AvatarStackView: UIStackView {
     
     // MARK: - Init
@@ -311,9 +337,6 @@ class AvatarStackView: UIStackView {
         addArrangedSubview(imageView)
     }
 }
-
-
-
 
 public extension UIColor {
     convenience init(hex: String?) {
