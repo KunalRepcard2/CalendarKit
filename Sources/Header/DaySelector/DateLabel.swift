@@ -47,12 +47,17 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
         textAlignment = .center
         clipsToBounds = true
     }
-
+    
+    public func reloadDot() {
+        // update your dot visibility
+        addDotTag(showDot, color: selected ? style.selectedDotColor : style.dotColor)
+    }
+    
     public func updateStyle(_ newStyle: DaySelectorStyle) {
         style = newStyle
         updateState()
     }
-
+       
     func updateState() {
         text = String(component(component: .day, from: date))
         let today = isToday
@@ -66,7 +71,7 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             textColor = today ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
         }
-        addDotTag(showDot, color: selected ? style.selectedDotColor : style.dotColor)
+        reloadDot()
     }
 
     private func component(component: Calendar.Component, from date: Date) -> Int {
@@ -103,21 +108,23 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
 
 public extension UIView  {
     func addDotTag(_ add: Bool,  color: UIColor) {
-       self.removeDotTag()
-       let dotView = UIView()
-       dotView.backgroundColor = color
-       dotView.layer.cornerRadius = 2
-       dotView.translatesAutoresizingMaskIntoConstraints = false
-       dotView.tag = 67890
-       // Add dot inside the label
-       self.addSubview(dotView)
-
-       NSLayoutConstraint.activate([
-           dotView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-           dotView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2), // little below
-           dotView.widthAnchor.constraint(equalToConstant: 4),
-           dotView.heightAnchor.constraint(equalToConstant: 4)
-       ])
+        self.removeDotTag()
+        if !add { return }
+        
+        let dotView = UIView()
+        dotView.backgroundColor = color
+        dotView.layer.cornerRadius = 2
+        dotView.translatesAutoresizingMaskIntoConstraints = false
+        dotView.tag = 67890
+        // Add dot inside the label
+        self.addSubview(dotView)
+        
+        NSLayoutConstraint.activate([
+            dotView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            dotView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2), // little below
+            dotView.widthAnchor.constraint(equalToConstant: 4),
+            dotView.heightAnchor.constraint(equalToConstant: 4)
+        ])
     }
     
     func removeDotTag() {

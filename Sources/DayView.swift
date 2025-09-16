@@ -149,6 +149,10 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         timelinePagerView.reloadData()
     }
     
+    public func reloadDotsOnHeader() {
+        dayHeaderView.reloadDotsOnPage()
+    }
+    
     public func move(to date: Date) {
         state?.move(to: date)
     }

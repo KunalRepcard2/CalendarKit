@@ -53,6 +53,10 @@ public final class DayDateCell: UIView, DaySelectorItemProtocol {
         [dayLabel, dateLabel].forEach(addSubview(_:))
     }
     
+    public func reloadDot() {
+        // update your dot visibility
+    }
+    
     public func updateStyle(_ newStyle: DaySelectorStyle) {
         style = newStyle
         dateLabel.updateStyle(newStyle)

@@ -48,6 +48,10 @@ public final class DaySelectorController: UIViewController {
         }
     }
     
+    func reloadDots() {
+        daySelector.reloadDots()
+    }
+    
     override public func loadView() {
         view = daySelector
     }

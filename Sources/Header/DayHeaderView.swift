@@ -53,7 +53,12 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    func reloadDotsOnPage() {
+        guard let pageC = pagingViewController.viewControllers?.first as? DaySelectorController else { return }
+        pageC.reloadDots()
+    }
+    
     private func configure() {
         [daySymbolsView, swipeLabelView, separator].forEach(addSubview)
         backgroundColor = style.backgroundColor

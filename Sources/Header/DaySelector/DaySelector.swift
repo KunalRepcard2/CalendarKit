@@ -5,6 +5,7 @@ public protocol DaySelectorItemProtocol: AnyObject {
     var selected: Bool {get set}
     var calendar: Calendar {get set}
     var showDot: Bool {get set}
+    func reloadDot()
     func updateStyle(_ newStyle: DaySelectorStyle)
 }
 
@@ -110,6 +111,13 @@ public final class DaySelector: UIView {
             let lDate = calendar.date(byAdding: .day, value: increment, to: startDate)!
             label.showDot = self.delegate?.showDotOnDate(lDate) ?? false
             label.date = lDate
+        }
+    }
+    
+    func reloadDots() {
+        items.forEach {
+            $0.showDot = self.delegate?.showDotOnDate($0.date) ?? false
+            $0.reloadDot()
         }
     }
     
