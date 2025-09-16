@@ -105,10 +105,21 @@ open class EventView: UIView {
         drawsShadow = shouldShowHandles
         
         // Avatars (prevent duplicate stacking)
-        //        if avatarStack.superview == nil {
-        //            avatarStack.addAvatar(image: UIImage(named: "user1"))
-        //            addSubview(avatarStack)
-        //        }
+//        if avatarStack.superview == nil {
+//            for _ in 1...5 {
+//                if let url = URL(string: "https://s3-ap-southeast-2.amazonaws.com/repcard/users/dJEID16856188417637.jpg") {
+//                    URLSession.shared.dataTask(with: url) { data, response, error in
+//                        if let data = data, let image = UIImage(data: data) {
+//                            DispatchQueue.main.async {
+//                                // Use image on the main thread
+//                                self.avatarStack.addAvatar(image: image)
+//                                self.addSubview(self.avatarStack)
+//                            }
+//                        }
+//                    }.resume()
+//                }
+//            }
+//        }
         
         // Time off (prevent duplicate stacking)
         if event.isTimeOff {
@@ -171,7 +182,7 @@ open class EventView: UIView {
         verticalLine.frame = CGRect(x: 0, y: 0, width: lineWidth, height: bounds.height)
         textLabel.frame = CGRect(x: 8, y: 0, width: bounds.width - 8, height: bounds.height > 21 ? 21 : bounds.height)
         stripedView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
-        avatarStack.frame = CGRect(x: 8, y: textLabel.frame.height + 2, width: bounds.width - 8, height: 26)
+        avatarStack.frame = CGRect(x: 8, y: textLabel.frame.height + 2, width: bounds.width - 8, height: 20)
         
         //        textLabel.frame = {
         //            if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {
@@ -197,7 +208,7 @@ open class EventView: UIView {
         //                              size: size)
         //        last?.frame = CGRect(origin: CGPoint(x: layoutMargins.left, y: height - yPad - radius),
         //                             size: size)
-        //        
+        //
         if drawsShadow {
             applySketchShadow(alpha: 0.13,
                               blur: 10)
@@ -319,7 +330,7 @@ class AvatarStackView: UIStackView {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         
-        let size: CGFloat = 24
+        let size: CGFloat = 20
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: size),
