@@ -15,6 +15,8 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
         }
     }
 
+    var dateClickCompletion: ((Date) -> Void)?
+    
     public private(set) var calendar = Calendar.autoupdatingCurrent
     public weak var state: DayViewState? {
         willSet(newValue) {
@@ -27,18 +29,19 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
     }
     
     private func updateLabelText() {
-        labels.first!.text = formattedDate(date: state!.selectedDate)
+        let str = self.textWithDate(state!.selectedDate)
+        firstLabelBtn.setAttributedTitle(str, for: .normal)
     }
 
-    private var firstLabel: UILabel {
-        labels.first!
+    private var firstLabelBtn: UIButton {
+        labelButtons.first!
     }
 
-    private var secondLabel: UILabel {
-        labels.last!
+    private var secondLabelBtn: UIButton {
+        labelButtons.last!
     }
 
-    private var labels = [UILabel]()
+    private var labelButtons = [UIButton]()
 
     private var style = SwipeLabelStyle()
 
@@ -60,19 +63,30 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
 
     private func configure() {
         for _ in 0...1 {
-            let label = UILabel()
-            label.textAlignment = .center
-            labels.append(label)
-            addSubview(label)
+            let button = UIButton(type: .system)
+            button.titleLabel?.textAlignment = .center
+            button.tintColor = .black
+            labelButtons.append(button)
+            addSubview(button)
+           
+            // Add action with closure
+            if #available(iOS 14.0, *) {
+                button.addAction(UIAction { _ in
+                    print("Button tapped via UIAction\(self.state?.selectedDate.description ?? "")")
+                    self.dateClickCompletion?(self.state?.selectedDate ?? Date())
+                }, for: .touchUpInside)
+            } else {
+                
+            }
         }
         updateStyle(style)
     }
 
     public func updateStyle(_ newStyle: SwipeLabelStyle) {
         style = newStyle
-        labels.forEach { label in
-            label.textColor = style.textColor
-            label.font = style.font
+        labelButtons.forEach { button in
+            button.setTitleColor(style.textColor, for: .normal)
+            button.titleLabel?.font = style.font
         }
     }
 
@@ -81,17 +95,17 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
         let shiftRatio: Double = 30/375
         let screenWidth = bounds.width
 
-        secondLabel.alpha = 0
-        secondLabel.frame = bounds
-        secondLabel.frame.origin.x -= Double(shiftRatio * screenWidth * 3) * multiplier
+        secondLabelBtn.alpha = 0
+        secondLabelBtn.frame = bounds
+        secondLabelBtn.frame.origin.x -= Double(shiftRatio * screenWidth * 3) * multiplier
 
         UIView.animate(withDuration: 0.3, animations: {
-            self.secondLabel.frame = self.bounds
-            self.firstLabel.frame.origin.x += Double(shiftRatio * screenWidth) * multiplier
-            self.secondLabel.alpha = 1
-            self.firstLabel.alpha = 0
+            self.secondLabelBtn.frame = self.bounds
+            self.firstLabelBtn.frame.origin.x += Double(shiftRatio * screenWidth) * multiplier
+            self.secondLabelBtn.alpha = 1
+            self.firstLabelBtn.alpha = 0
         }, completion: { _ in
-            self.labels = self.labels.reversed()
+            self.labelButtons = self.labelButtons.reversed()
         })
     }
 
@@ -103,13 +117,14 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
     }
 
     // MARK: DayViewStateUpdating
-
     public func move(from oldDate: Date, to newDate: Date) {
         guard newDate != oldDate else {
             return
         }
-        labels.last!.text = formattedDate(date: newDate) + ">"
-
+        
+        let str = self.textWithDate(newDate)
+        secondLabelBtn.setAttributedTitle(str, for: .normal)
+        
         var direction: AnimationDirection = newDate > oldDate ? .Forward : .Backward
 
         let rightToLeft = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
@@ -118,13 +133,20 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
         animate(direction)
     }
 
+    private func textWithDate(_ date: Date) -> NSAttributedString {
+        let attachment = NSTextAttachment()
+        if #available(iOS 13.0, *) {
+            attachment.image = UIImage(systemName: "chevron.down")
+        }
+        
+        let txt = formattedDate(date: date)
+        let attributedString = NSMutableAttributedString(string: txt)
+        attributedString.append(NSAttributedString(string:" ")) // two spaces
+        attributedString.append(NSAttributedString(attachment: attachment))
+        return attributedString
+    }
+    
     private func formattedDate(date: Date) -> String {
-        let timezone = calendar.timeZone
-        let formatter = DateFormatter()
-        formatter.dateStyle = .full
-        formatter.timeStyle = .none
-        formatter.timeZone = timezone
-        formatter.locale = Locale.init(identifier: Locale.preferredLanguages[0])
-        return formatter.string(from: date)
+        return date.stringWith(formate: "MMM d, yyyy", timeZone: calendar.timeZone)
     }
 }

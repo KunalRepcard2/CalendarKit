@@ -2,6 +2,7 @@ import UIKit
 
 protocol DayHeaderViewDelegate: AnyObject {
     func shouldShowDotOn(date: Date) -> Bool
+    
 }
 
 public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdating, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -32,7 +33,7 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
     private var pagingViewController = UIPageViewController(transitionStyle: .scroll,
                                                             navigationOrientation: .horizontal,
                                                             options: nil)
-    private let swipeLabelView: SwipeLabelView
+    private var swipeLabelView: SwipeLabelView
     private lazy var separator: UIView = {
         let separator = UIView()
         separator.backgroundColor = SystemColors.systemSeparator
@@ -47,6 +48,10 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
         self.daySymbolsView = symbols
         super.init(frame: .zero)
         configure()
+    }
+    
+    func setDateClickCompletion(_ block: @escaping (Date) -> Void) {
+        self.swipeLabelView.dateClickCompletion = block
     }
 
     @available(*, unavailable)
@@ -114,9 +119,11 @@ public final class DayHeaderView: UIView, DaySelectorDelegate, DayViewStateUpdat
 
     override public func layoutSubviews() {
         super.layoutSubviews()
-        daySymbolsView.frame = CGRect(origin: .zero,
+        var yy: CGFloat = 5
+        daySymbolsView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
                                       size: CGSize(width: bounds.width, height: daySymbolsViewHeight))
-        pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: daySymbolsViewHeight),
+        yy += daySymbolsViewHeight + 5
+        pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: yy),
                                                   size: CGSize(width: bounds.width, height: pagingScrollViewHeight))
         swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 5 - swipeLabelViewHeight),
                                       size: CGSize(width: bounds.width, height: swipeLabelViewHeight))
