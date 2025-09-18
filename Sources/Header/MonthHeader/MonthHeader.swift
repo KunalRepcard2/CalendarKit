@@ -123,15 +123,15 @@ private extension MonthHeaderView {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
         addSubview(pagingViewController.view!)
-         monthSelectorController.setDateClickCompletion { date in
-             self.dateClickCompletion?(date)
-         }
     }
     
     func viewControllerAt(index: Int) -> MonthSelectorController {
         let monthSelController = MonthSelectorController()
         monthSelController.pageIndex = index
         monthSelController.monthRepresentDate = viewModel.displayMonths[index]
+        monthSelController.setDateClickCompletion { date in
+            self.dateClickCompletion?(date)
+        }
         return monthSelController
     }
 }

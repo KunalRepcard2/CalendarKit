@@ -103,7 +103,7 @@ class MonthDaySelectorView: UIView {
             
             let weekIndx = indx + emptyDaysBeforeFirstDay // add gap from start
             
-            if (weekIndx) % 7 == 0 { // last row reset
+            if weekIndx > 0, (weekIndx) % 7 == 0 { // last row reset
                 xx = gap
                 yy += cellSize
             }
