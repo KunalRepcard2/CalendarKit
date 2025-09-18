@@ -38,14 +38,6 @@ class MonthSelectorView: UIView {
         self.setupView()
     }
     
-    
-    var selectedDate: Date? { // it is preselected date from weekly
-        didSet {
-            // scroll to the month make selected
-//            self.selectedIndex = self.viewModel.indexFor(date: selectedDate)
-        }
-    }
-    
     private func setupView() {
         // ScrollView setup
         scrollView.showsHorizontalScrollIndicator = false
@@ -197,12 +189,13 @@ class MonthButton : UIView {
     }
     
     @objc private func handleTap() {
-        self.alpha = 0.5
+        self.monthLabel.alpha = 0.5
+        self.backgroundColor = .gray.withAlphaComponent(0.3)
         onMonthButtonTap?()
         
         // reset after a short delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.alpha = 1.0
+            self.monthLabel.alpha = 1.0
         }
     }
 }

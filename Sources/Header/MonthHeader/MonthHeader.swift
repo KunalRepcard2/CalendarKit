@@ -28,7 +28,7 @@ class MonthHeaderView: UIView {
         }
         didSet {
             state?.subscribe(client: self)
-            monthSelectorView.selectedDate = state?.selectedDate
+            // update current month selection | monthSelectorView
         }
     }
     
@@ -89,7 +89,6 @@ class MonthHeaderView: UIView {
 
         [daySymbolsView, monthSelectorView, separator].forEach(addSubview)
         backgroundColor = style.backgroundColor
-        monthSelectorView.selectedDate = state?.selectedDate
         configurePagingViewController()
         monthSelectorView.onChangeOfMonth = { [weak self] index in
             // scrol to selected month..

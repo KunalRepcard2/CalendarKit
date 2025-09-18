@@ -68,6 +68,7 @@ class MonthDaySelectorView: UIView {
         // Create new with corresponding class
         for i in 1...daysInMonth {
             let cell = MonthCalDateCellView()
+            cell.isSelected = i == 9
             cell.dayNumber = i
             //Date.dateFrom(string: "\(i)-\(month)-\(year)", formate: "dd-mm-yyyy") ?? Date()
             rows.append(cell)
@@ -151,13 +152,15 @@ class MonthCalDateCellView: UILabel {
         super.init(frame: frame)
         configure()
     }
-
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         configure()
     }
     
+    override public func layoutSubviews() {
+        layer.cornerRadius = bounds.height / 2
+    }
    
     private func configure() {
         isUserInteractionEnabled = true
