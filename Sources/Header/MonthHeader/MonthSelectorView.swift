@@ -1,0 +1,208 @@
+//
+//  MonthSelectorView.swift
+//  CalendarKit
+//
+//  Created by Prakash Jha on 18/09/25.
+//
+import UIKit
+
+class MonthSelectorView: UIView {
+    private let scrollView = UIScrollView()
+    private let stackView = UIStackView()
+    private var monthButtons: [MonthButton] = []
+    
+    var viewModel = MonthSelectorViewModel() {
+        didSet {
+            self.addMonthsButtons()
+        }
+    }
+    
+    private let buttonSize: CGSize = CGSize(width: 65, height: 40)
+    
+    var selectedIndex: Int = 1 {
+        didSet {
+            self.updateSelection()
+            self.scrollToMonth(at: selectedIndex)
+        }
+    }
+    
+    var onChangeOfMonth: ((_ index: Int) -> Void)? // 1-month-year
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.setupView()
+    }
+    
+    
+    var selectedDate: Date? { // it is preselected date from weekly
+        didSet {
+            // scroll to the month make selected
+//            self.selectedIndex = self.viewModel.indexFor(date: selectedDate)
+        }
+    }
+    
+    private func setupView() {
+        // ScrollView setup
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollView)
+        NSLayoutConstraint.activate([
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+
+        // StackView setup
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(stackView)
+
+        NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 12),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -12), // ✅ Needed!
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            stackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
+        ])
+    }
+    
+    private func addMonthsButtons() {
+        monthButtons.forEach{$0.removeFromSuperview()}
+        monthButtons.removeAll()
+        
+        for (index, monthDate) in viewModel.displayMonths.enumerated() {
+            let monthView = MonthButton()
+            monthView.configureMonth(date: monthDate)
+            monthView.tag = index
+            monthView.onMonthButtonTap = {
+                print("Tapped: \(monthDate)  - \(index)")
+                self.selectedIndex = index
+                self.onChangeOfMonth?(index)
+            }
+            
+            monthView.setContentHuggingPriority(.required, for: .horizontal)
+            monthView.widthAnchor.constraint(greaterThanOrEqualToConstant: buttonSize.width).isActive = true
+            monthView.heightAnchor.constraint(equalToConstant: buttonSize.height).isActive = true
+
+            monthButtons.append(monthView)
+            stackView.addArrangedSubview(monthView)
+            
+            updateSelection()
+        }
+    }
+    
+    func scrollToMonth(at index: Int, animated: Bool = true) {
+        guard index >= 0, index < monthButtons.count else { return }
+        
+        let targetView = monthButtons[index]
+        let targetFrame = targetView.frame
+        
+        // Scroll so that target is visible (with some padding if you like)
+        scrollView.scrollRectToVisible(targetFrame.insetBy(dx: -16, dy: 0), animated: animated)
+    }
+    
+    
+    @objc private func monthTapped(_ sender: UIButton) {
+        selectedIndex = sender.tag
+        // 👉 Callback to parent view controller can go here if needed
+        print("Selected month: \(viewModel.displayMonths[selectedIndex])")
+    }
+    
+    private func updateSelection() {
+        for (index, monthBtn) in monthButtons.enumerated() {
+            monthBtn.isSelected = index == selectedIndex
+        }
+    }
+}
+
+class MonthButton : UIView {
+    private let monthLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        label.textColor = UIColor(hex: "#3F3F46")
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private let yearLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 8, weight: .regular)
+        label.textColor = UIColor(hex: "#3F3F46")
+        label.textAlignment = .center
+        return label
+    }()
+    
+    var isSelected: Bool = false {
+        didSet {
+            monthLabel.textColor = isSelected ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#3F3F46")
+            yearLabel.textColor = isSelected ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#3F3F46")
+            self.backgroundColor = isSelected ? UIColor(hex: "#2E90FA") : .clear
+        }
+    }
+    
+    var onMonthButtonTap: (() -> Void)?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
+    private func setupView() {
+        addSubview(monthLabel)
+        addSubview(yearLabel)
+        
+        monthLabel.translatesAutoresizingMaskIntoConstraints = false
+        yearLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            monthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            monthLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            
+            yearLabel.topAnchor.constraint(equalTo: monthLabel.bottomAnchor, constant: 2),
+            yearLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+//            yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+//            yearLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+//            yearLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
+        ])
+        
+        // Make clickable
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(tap)
+        isUserInteractionEnabled = true
+        
+        self.layer.cornerRadius = 8
+        self.layer.masksToBounds = true
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+    }
+    
+    func configureMonth(date: Date) {
+        let dtStr = date.stringWith(formate: MonthSelectorViewModel.storageFormate)
+        let arr = dtStr.components(separatedBy: "-")
+        monthLabel.text = arr.first
+        yearLabel.text = arr.last
+    }
+    
+    @objc private func handleTap() {
+        self.alpha = 0.5
+        onMonthButtonTap?()
+        
+        // reset after a short delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.alpha = 1.0
+        }
+    }
+}

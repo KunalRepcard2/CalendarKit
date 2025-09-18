@@ -57,7 +57,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     }
     
     private static let headerVisibleHeightD: Double = 115 // earlier 95
-    private static let headerVisibleHeightM: Double = 305 // 20 + 45*5 + 60
+    private static let headerVisibleHeightM: Double = MonthHeaderView.totalHeight
         
 //    public var headerHeight: Double = headerVisibleHeightD
     
@@ -79,6 +79,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         didSet {
             dayHeaderView.state = state
             timelinePagerView.state = state
+            monthHeaderView.state = state
         }
     }
     

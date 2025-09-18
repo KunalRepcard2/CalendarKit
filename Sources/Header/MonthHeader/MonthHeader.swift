@@ -10,18 +10,34 @@ import UIKit
 class MonthHeaderView: UIView {
     public let calendar: Calendar
     private let daySymbolsView: DaySymbolsView
-
-    private var daySymbolsViewHeight: Double = 20
-    private var pagingScrollViewHeight: Double = 45 * 5
-    private var swipeLabelViewHeight: Double = 20
+    
+    private let viewModel = MonthSelectorViewModel()
     
     private var pagingViewController = UIPageViewController(transitionStyle: .scroll,
                                                             navigationOrientation: .horizontal,
                                                             options: nil)
+    private let monthSelectorView: MonthSelectorView
+    
+    private static let daySymbolsViewHeight: Double = 20
+    private static let pagingScrollViewHeight: Double = 40 * 5
+    private static let monthSelectorViewHeight: Double = 60
+      
+    public weak var state: DayViewState? {
+        willSet(newValue) {
+            state?.unsubscribe(client: self)
+        }
+        didSet {
+            state?.subscribe(client: self)
+            monthSelectorView.selectedDate = state?.selectedDate
+        }
+    }
+    
+    class var totalHeight: Double {
+        return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + MonthHeaderView.pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight
+    }
     
     private var style = DayHeaderStyle()
     private var dateClickCompletion: ((Date?) -> Void)?
-
 
     private lazy var separator: UIView = {
         let separator = UIView()
@@ -32,7 +48,7 @@ class MonthHeaderView: UIView {
     public init(calendar: Calendar) {
         self.calendar = calendar
         let symbols = DaySymbolsView(calendar: calendar)
-//        let swipeLabel = SwipeLabelView(calendar: calendar)
+        monthSelectorView = MonthSelectorView()
         self.daySymbolsView = symbols
 
         super.init(frame: .zero)
@@ -48,13 +64,15 @@ class MonthHeaderView: UIView {
         super.layoutSubviews()
         var yy: CGFloat = 5
         daySymbolsView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
-                                      size: CGSize(width: bounds.width, height: daySymbolsViewHeight))
-        yy += daySymbolsViewHeight + 5
-        
+                                      size: CGSize(width: bounds.width, height: MonthHeaderView.daySymbolsViewHeight))
+       
+        yy += MonthHeaderView.daySymbolsViewHeight + 5
         pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: yy),
-                                                  size: CGSize(width: bounds.width, height: pagingScrollViewHeight))
-//        swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 5 - swipeLabelViewHeight),
-//                                      size: CGSize(width: bounds.width, height: swipeLabelViewHeight))
+                                                  size: CGSize(width: bounds.width, height: MonthHeaderView.pagingScrollViewHeight))
+        
+        yy += MonthHeaderView.pagingScrollViewHeight + 5
+        monthSelectorView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
+                                         size: CGSize(width: bounds.width, height: MonthHeaderView.monthSelectorViewHeight))
 
         let separatorHeight = 1 / UIScreen.main.scale
         separator.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - separatorHeight),
@@ -66,9 +84,25 @@ class MonthHeaderView: UIView {
     }
     
     private func configure() {
-        [daySymbolsView, separator].forEach(addSubview)
+        self.viewModel.prepareList(date: Date())
+        monthSelectorView.viewModel = self.viewModel
+
+        [daySymbolsView, monthSelectorView, separator].forEach(addSubview)
         backgroundColor = style.backgroundColor
+        monthSelectorView.selectedDate = state?.selectedDate
         configurePagingViewController()
+        monthSelectorView.onChangeOfMonth = { [weak self] index in
+            // scrol to selected month..
+            self?.goToPage(index: index)
+        }
+    }
+    
+    func goToPage(index: Int,
+                  direction: UIPageViewController.NavigationDirection = .forward,
+                  animated: Bool = true) {
+        guard index >= 0, index < viewModel.displayMonths.count else { return }
+        let vc = viewControllerAt(index: index)
+        pagingViewController.setViewControllers([vc], direction: direction, animated: animated, completion: nil)
     }
     
     func reloadDotsOnPage() {
@@ -77,10 +111,10 @@ class MonthHeaderView: UIView {
     }
 }
 
+
 private extension MonthHeaderView {
      func configurePagingViewController() {
-        let selectedDate = Date()
-        let monthSelectorController = makeSelectorController()
+         let monthSelectorController = viewControllerAt(index: 1)
 
         let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
         let direction: UIPageViewController.NavigationDirection = leftToRight ? .forward : .reverse
@@ -94,51 +128,73 @@ private extension MonthHeaderView {
          }
     }
     
-    func makeSelectorController() -> MonthSelectorController {
-        let monthSelectorController = MonthSelectorController()
-//        monthSelectorController.calendar = calendar
-//        daySelectorController.transitionToHorizontalSizeClass(currentSizeClass)
-//        daySelectorController.updateStyle(style.daySelector)
-//        daySelectorController.startDate = startDate
-//        daySelectorController.delegate = self
-        return monthSelectorController
+    func viewControllerAt(index: Int) -> MonthSelectorController {
+        let monthSelController = MonthSelectorController()
+        monthSelController.pageIndex = index
+        monthSelController.monthRepresentDate = viewModel.displayMonths[index]
+        return monthSelController
     }
 }
 
 
-extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+extension MonthHeaderView: UIPageViewControllerDataSource {
     // UIPageViewControllerDataSource
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        if let selector = viewController as? DaySelectorController {
-            let previousDate = calendar.date(byAdding: .weekOfYear, value: -1, to: selector.startDate)!
-            return makeSelectorController() // previous
+        guard let selector = viewController as? MonthSelectorController,
+            selector.pageIndex > 0 else {
+            return nil
         }
-        return nil
+        
+        return viewControllerAt(index: selector.pageIndex - 1) // previous
     }
+    
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        if let selector = viewController as? DaySelectorController {
-            let nextDate = calendar.date(byAdding: .weekOfYear, value: 1, to: selector.startDate)!
-            return makeSelectorController() // next
+        guard let selector = viewController as? MonthSelectorController,
+              selector.pageIndex < self.viewModel.displayMonths.count - 1 else {
+            return nil
         }
-        return nil
+            
+        let indx = selector.pageIndex + 1
+        return viewControllerAt(index: indx) // next
     }
+}
 
-    // MARK: UIPageViewControllerDelegate
-
-    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard completed else {return}
-//        if let selector = pageViewController.viewControllers?.first as? DaySelectorController {
-//            selector.selectedIndex = currentWeekdayIndex
-//            if let selectedDate = selector.selectedDate {
-//                state?.client(client: self, didMoveTo: selectedDate)
-//            }
-//        }
-//        // Deselect all the views but the currently visible one
-//        (previousViewControllers as? [DaySelectorController])?.forEach{$0.selectedIndex = -1}
+extension MonthHeaderView: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            didFinishAnimating finished: Bool,
+                            previousViewControllers: [UIViewController],
+                            transitionCompleted completed: Bool) {
+       
+        guard completed, let currentVC = pageViewController.viewControllers?.first as? MonthSelectorController else { return }
+                
+        let index = currentVC.pageIndex
+        self.monthSelectorView.selectedIndex = index
+        print("Scrolled to page index: \(index)")
     }
+}
 
-    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-//        (pendingViewControllers as? [DaySelectorController])?.forEach{$0.updateStyle(style.daySelector)}
+// MARK: DayViewStateUpdating
+extension MonthHeaderView: DayViewStateUpdating {
+    public func move(from oldDate: Date, to newDate: Date) {
+//        let newDate = newDate.dateOnly(calendar: calendar)
+        
+    }
+}
+
+// MARK: - MonthSelectorViewModel
+class MonthSelectorViewModel {
+    private(set) var displayMonths = [Date]()
+    static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
+    
+    func prepareList(date: Date) {
+        displayMonths.removeAll()
+        let calendar = Calendar.current
+        let lastMonth: Date = calendar.date(byAdding: .month, value: -1, to: date) ?? date
+        for i in 0..<12 {
+            if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
+                displayMonths.append(nextMonth)
+            }
+        }
     }
 }
