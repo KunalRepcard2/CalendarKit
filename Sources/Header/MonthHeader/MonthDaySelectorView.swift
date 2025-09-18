@@ -7,15 +7,21 @@
 
 import UIKit
 
+protocol MonthDaySelectorViewDelegate : AnyObject {
+    var monthDaySelectorViewSelectedDayIndex: Int {get}
+    func monthDaySelectorView(_ view: MonthDaySelectorView, didSelectDate date: Date?)
+    func monthDaySelectorViewDisplayDot(_ view: MonthDaySelectorView) -> Bool
+}
+
+
 class MonthDaySelectorView: UIView {
     private var rows : [MonthCalDateCellView] = []
     var totalHeight: CGFloat = 0
-    var selectedDate: Date?
+    var selectedDateIndex: Int = 1
     
-    private var month = 1
-    private var year = 2025
+    private(set) var month = 1
+    private(set) var year = 2025
     private var daysInMonth: Int = 30
-    
     private let cellSize: CGFloat = 40
     
     private var emptyDaysBeforeFirstDay : Int = 0 // begin from sun
@@ -68,7 +74,7 @@ class MonthDaySelectorView: UIView {
         // Create new with corresponding class
         for i in 1...daysInMonth {
             let cell = MonthCalDateCellView()
-            cell.isSelected = i == 9
+            cell.isSelected = i == selectedDateIndex
             cell.dayNumber = i
             //Date.dateFrom(string: "\(i)-\(month)-\(year)", formate: "dd-mm-yyyy") ?? Date()
             rows.append(cell)

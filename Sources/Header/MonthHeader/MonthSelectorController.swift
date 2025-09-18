@@ -12,12 +12,12 @@ public final class MonthSelectorController: UIViewController {
         
     var pageIndex = 0
     
-    var selectedDate: Date? {
+    var selectedDateIndex: Int {
         get {
-            monthDaySelector.selectedDate
+            monthDaySelector.selectedDateIndex
         }
         set {
-            monthDaySelector.selectedDate = newValue
+            monthDaySelector.selectedDateIndex = newValue
         }
     }
     
