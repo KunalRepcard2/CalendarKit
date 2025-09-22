@@ -106,7 +106,7 @@ open class EventView: UIView {
         
         // Avatars (prevent duplicate stacking)
 //        if avatarStack.superview == nil {
-//            for _ in 1...5 {
+//            for _ in 1...1 {
 //                if let url = URL(string: "https://s3-ap-southeast-2.amazonaws.com/repcard/users/dJEID16856188417637.jpg") {
 //                    URLSession.shared.dataTask(with: url) { data, response, error in
 //                        if let data = data, let image = UIImage(data: data) {

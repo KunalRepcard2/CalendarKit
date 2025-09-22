@@ -483,13 +483,24 @@ public final class TimelineView: UIView {
         overlappingEvents.removeAll()
 
         for overlappingEvents in groupsOfEvents {
-            let totalCount = Double(overlappingEvents.count)
-            for (index, event) in overlappingEvents.enumerated() {
+            let filteredEvents = overlappingEvents.filter { !$0.descriptor.isTimeOff }
+            let timeOffFilteredEvents = overlappingEvents.filter { $0.descriptor.isTimeOff }
+            let totalCount = Double(filteredEvents.count)
+            
+            for (index, event) in filteredEvents.enumerated() {
                 let startY = dateToY(event.descriptor.dateInterval.start)
                 let endY = dateToY(event.descriptor.dateInterval.end)
                 let floatIndex = Double(index)
                 let x = style.leadingInset + floatIndex / totalCount * calendarWidth
                 let equalWidth = calendarWidth / totalCount
+                event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+            }
+            
+            for (_, event) in timeOffFilteredEvents.enumerated() {
+                let startY = dateToY(event.descriptor.dateInterval.start)
+                let endY = dateToY(event.descriptor.dateInterval.end)
+                let x = style.leadingInset
+                let equalWidth = calendarWidth
                 event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
             }
         }
@@ -504,6 +515,14 @@ public final class TimelineView: UIView {
                 addSubview(newView)
             }
             eventViews.append(newView)
+            for event in eventViews {
+                if event.descriptor?.isTimeOff ?? false {
+                    if let index = eventViews.firstIndex(of: event) {
+                        let element = eventViews.remove(at: index)  // remove from old position
+                        eventViews.insert(element, at: 0)           // insert at front
+                    }
+                }
+            }
         }
     }
 
