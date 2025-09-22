@@ -2,6 +2,7 @@ import UIKit
 
 public final class DayHeaderView: CalHeaderView {
     public private(set) var daysInWeek = 7
+    
     private var currentSizeClass = UIUserInterfaceSizeClass.compact
     
     public weak var state: DayViewState? {
@@ -43,6 +44,12 @@ public final class DayHeaderView: CalHeaderView {
         pageC.reloadDots()
     }
     
+    public override func reloadOnDateChange() {
+        configurePagingViewController()
+        reloadDotsOnPage()
+        state?.move(to: selectedDate)
+    }
+    
     func setDateClickCompletion(_ block: @escaping (Date) -> Void) {
         self.swipeLabelView.dateClickCompletion = block
     }
@@ -54,7 +61,6 @@ public final class DayHeaderView: CalHeaderView {
     }
     
     private func configurePagingViewController() {
-        let selectedDate = Date()
         let daySelectorController = makeSelectorController(startDate: beginningOfWeek(selectedDate))
         daySelectorController.selectedDate = selectedDate
         currentWeekdayIndex = daySelectorController.selectedIndex

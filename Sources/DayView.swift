@@ -47,8 +47,8 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             
             UIView.animate(withDuration: 0.3) {
                 self.setNeedsLayout()
+                self.reloadDotsOnHeader()
             }
-            
         }
     }
     
@@ -138,13 +138,17 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         self.monthHeaderView.headerDelegate = self
         
         self.dayHeaderView.setDateClickCompletion { date in
-            let str = date.stringWith(formate: "MMM d, yyyy")
+            let str = date.stringWith(formate: "dd-MM-yyyy")
             print("Header date selected\(str)")
+            self.monthHeaderView.selectedDate = date
             // expend here..
             self.isMonthHeaderActive = true
         }
         
         self.monthHeaderView.setDateClickCompletion { date in
+            if let aDate = date {
+                self.dayHeaderView.selectedDate = aDate
+            }
             self.isMonthHeaderActive = false
         }
     }

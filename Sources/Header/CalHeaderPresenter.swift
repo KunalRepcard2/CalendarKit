@@ -16,6 +16,11 @@ public class CalHeaderView: UIView {
     let daySymbolsView: DaySymbolsView
     private(set) var style = DayHeaderStyle()
     var headerDelegate: CalHeaderViewDelegate?
+    var selectedDate: Date = Date() {
+        didSet {
+            reloadOnDateChange()
+        }
+    }
 
     public init(calendar: Calendar) {
         self.calendar = calendar
@@ -31,6 +36,10 @@ public class CalHeaderView: UIView {
     public func updateStyle(_ newStyle: DayHeaderStyle) {
         style = newStyle
         daySymbolsView.updateStyle(style.daySymbols)
+    }
+    
+    public func reloadOnDateChange() {
+        
     }
     
     public func reloadDotsOnPage() {

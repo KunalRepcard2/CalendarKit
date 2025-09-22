@@ -50,6 +50,10 @@ public final class MonthSelectorController: UIViewController {
     func transitionToHorizontalSizeClass(_ sizeClass: UIUserInterfaceSizeClass) {
         monthDaySelector.transitionToHorizontalSizeClass(sizeClass)
     }
+    
+    public func updateStyle(_ newStyle: DaySelectorStyle) {
+        monthDaySelector.updateStyle(newStyle)
+    }
 }
 
 

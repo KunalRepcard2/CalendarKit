@@ -7,6 +7,7 @@
 
 import UIKit
 
+// only for month boxes
 class MonthSelectorViewModel {
     private(set) var displayMonths = [Date]()
     static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
@@ -27,6 +28,9 @@ class MonthSelectorViewModel {
 class MonthHeaderView: CalHeaderView {    
     private var monthSelectorView: MonthSelectorView
     private let viewModel = MonthSelectorViewModel()
+    private var selectedDay = 5 // we may pass 1---31
+    
+    
     
     private var pagingViewController = UIPageViewController(transitionStyle: .scroll,
                                                             navigationOrientation: .horizontal,
@@ -78,12 +82,21 @@ class MonthHeaderView: CalHeaderView {
         pageC.reloadDots()
     }
     
+    public override func reloadOnDateChange() {
+        self.viewModel.prepareList(date: selectedDate)
+        selectedDay = Calendar.current.component(.day, from: selectedDate)
+        configurePagingViewController()
+        reloadDotsOnPage()
+    }
+    
     func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
         self.dateClickCompletion = block
     }
     
     private func configure() {
-        self.viewModel.prepareList(date: Date())
+        self.viewModel.prepareList(date: selectedDate)
+        selectedDay = Calendar.current.component(.day, from: selectedDate)
+
         monthSelectorView.viewModel = self.viewModel
 
         [daySymbolsView, monthSelectorView, separator].forEach(addSubview)
@@ -119,14 +132,15 @@ private extension MonthHeaderView {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
         addSubview(pagingViewController.view!)
-         monthSelectorController.reloadDots()
     }
     
     func viewControllerAt(index: Int) -> MonthSelectorController {
         let monthSelController = MonthSelectorController()
-        monthSelController.pageIndex = index
-        monthSelController.monthRepresentDate = viewModel.displayMonths[index]
         monthSelController.delegate = self
+        monthSelController.pageIndex = index
+        monthSelController.updateStyle(style.daySelector)
+        monthSelController.selectedDateIndex = selectedDay
+        monthSelController.monthRepresentDate = viewModel.displayMonths[index]
         return monthSelController
     }
 }

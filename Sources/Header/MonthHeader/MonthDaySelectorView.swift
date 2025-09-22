@@ -8,7 +8,7 @@
 import UIKit
 
 class MonthDaySelectorView: CalHeaderDaySelecterView {
-    private var rows : [MonthCalDateCellView] = []
+    private var rows : [MonthCalDateCellLabel] = []
     var totalHeight: CGFloat = 0
     var selectedDateIndex: Int = 1
     
@@ -18,6 +18,8 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     private let cellSize: CGFloat = 40
     
     private var emptyDaysBeforeFirstDay : Int = 0 // begin from sun
+    private var style = DaySelectorStyle()
+
     
     var monthRepresentDate: Date = Date() {
         didSet{
@@ -49,12 +51,17 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
         initializeViews()
     }
     
+    public func updateStyle(_ newStyle: DaySelectorStyle) {
+        style = newStyle
+        rows.forEach{$0.updateStyle(style)}
+    }
+    
     private func dateWith(day: Int) -> Date? {
-       return Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-mm-yyyy")
+       return Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-MM-yyyy")
     }
     
     @objc private func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
-        if let cell = sender.view as? MonthCalDateCellView,
+        if let cell = sender.view as? MonthCalDateCellLabel,
           let aDate = dateWith(day: cell.dayNumber) {
             self.delegate?.dateSelectorDidSelectDate(aDate)
         }
@@ -70,7 +77,7 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
         
         // Create new with corresponding class
         for i in 1...daysInMonth {
-            let cell = MonthCalDateCellView()
+            let cell = MonthCalDateCellLabel()
             cell.isSelected = i == selectedDateIndex
             cell.dayNumber = i            
             //Date.dateFrom(string: "\(i)-\(month)-\(year)", formate: "dd-mm-yyyy") ?? Date()
@@ -82,6 +89,8 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
                                                     action: #selector(MonthDaySelectorView.dateLabelDidTap(_:)))
             cell.addGestureRecognizer(recognizer)
         }
+        
+        reloadDots()
     }
     
     override public func layoutSubviews() {
@@ -105,7 +114,7 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
             cellV.frame = CGRect(origin: CGPoint(x: xx, y: yy), size: sz)
             xx += cellSize + gap
             
-            let weekIndx = indx + emptyDaysBeforeFirstDay // add gap from start
+            let weekIndx = indx + emptyDaysBeforeFirstDay + 1 // add gap from start
             
             if weekIndx > 0, (weekIndx) % 7 == 0 { // last row reset
                 xx = gap
@@ -125,59 +134,3 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     }
 }
 
-class MonthCalDateCellView: UILabel {
-    private var style = DaySelectorStyle()
-    
-    var isSelected = false
-    var isToday = false
-    var isWeekend = false
-    var showDot: Bool = false {
-        didSet {
-            addDotTag(showDot, color: isSelected ? style.selectedDotColor : style.dotColor)
-        }
-    }
-    
-    var dayNumber: Int = 0 {
-        didSet {
-            text = "\(dayNumber)"
-        }
-    }
-
-    func updateState() {
-        let today = isToday
-        if isSelected {
-            font = style.todayFont
-            textColor = today ? style.todayActiveTextColor : style.activeTextColor
-            backgroundColor = today ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
-        } else {
-            let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
-            font = style.font
-            textColor = today ? style.todayInactiveTextColor : notTodayColor
-            backgroundColor = style.inactiveBackgroundColor
-        }
-    }
-    
-    override public var intrinsicContentSize: CGSize {
-        CGSize(width: 40, height: 40)
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configure()
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        configure()
-    }
-    
-    override public func layoutSubviews() {
-        layer.cornerRadius = bounds.height / 2
-    }
-   
-    private func configure() {
-        isUserInteractionEnabled = true
-        textAlignment = .center
-        clipsToBounds = true
-    }
-}
