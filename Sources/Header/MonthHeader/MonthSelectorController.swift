@@ -12,6 +12,15 @@ public final class MonthSelectorController: UIViewController {
         
     var pageIndex = 0
     
+    var delegate: DaySelectorViewDelegate? {
+        get {
+            monthDaySelector.delegate
+        }
+        set {
+            monthDaySelector.delegate = newValue
+        }
+    }
+    
     var selectedDateIndex: Int {
         get {
             monthDaySelector.selectedDateIndex
@@ -30,12 +39,8 @@ public final class MonthSelectorController: UIViewController {
         }
     }
     
-    func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
-        self.monthDaySelector.dateClickCompletion = block
-    }
-    
     func reloadDots() {
-//        monthSelector.reloadDots()
+        monthDaySelector.reloadDots()
     }
     
     override public func loadView() {

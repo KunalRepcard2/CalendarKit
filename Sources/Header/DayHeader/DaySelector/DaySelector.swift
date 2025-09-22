@@ -9,13 +9,7 @@ public protocol DaySelectorItemProtocol: AnyObject {
     func updateStyle(_ newStyle: DaySelectorStyle)
 }
 
-public protocol DaySelectorDelegate: AnyObject {
-    func dateSelectorDidSelectDate(_ date: Date)
-    func showDotOnDate(_ date: Date) -> Bool
-}
-
-public final class DaySelector: UIView {
-    public weak var delegate: DaySelectorDelegate?
+public final class DaySelector: CalHeaderDaySelecterView {
     
     public var calendar = Calendar.autoupdatingCurrent {
         didSet {
@@ -109,14 +103,14 @@ public final class DaySelector: UIView {
     private func configure() {
         for (increment, label) in items.enumerated() {
             let lDate = calendar.date(byAdding: .day, value: increment, to: startDate)!
-            label.showDot = self.delegate?.showDotOnDate(lDate) ?? false
+            label.showDot = self.delegate?.daySelectorShouldShowDotOn(date: lDate) ?? false
             label.date = lDate
         }
     }
     
     func reloadDots() {
         items.forEach {
-            $0.showDot = self.delegate?.showDotOnDate($0.date) ?? false
+            $0.showDot = self.delegate?.daySelectorShouldShowDotOn(date: $0.date) ?? false
             $0.reloadDot()
         }
     }

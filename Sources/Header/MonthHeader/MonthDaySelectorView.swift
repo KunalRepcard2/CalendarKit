@@ -7,14 +7,7 @@
 
 import UIKit
 
-protocol MonthDaySelectorViewDelegate : AnyObject {
-    var monthDaySelectorViewSelectedDayIndex: Int {get}
-    func monthDaySelectorView(_ view: MonthDaySelectorView, didSelectDate date: Date?)
-    func monthDaySelectorViewDisplayDot(_ view: MonthDaySelectorView) -> Bool
-}
-
-
-class MonthDaySelectorView: UIView {
+class MonthDaySelectorView: CalHeaderDaySelecterView {
     private var rows : [MonthCalDateCellView] = []
     var totalHeight: CGFloat = 0
     var selectedDateIndex: Int = 1
@@ -25,7 +18,6 @@ class MonthDaySelectorView: UIView {
     private let cellSize: CGFloat = 40
     
     private var emptyDaysBeforeFirstDay : Int = 0 // begin from sun
-    var dateClickCompletion: ((Date?) -> Void)?
     
     var monthRepresentDate: Date = Date() {
         didSet{
@@ -57,9 +49,14 @@ class MonthDaySelectorView: UIView {
         initializeViews()
     }
     
+    private func dateWith(day: Int) -> Date? {
+       return Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-mm-yyyy")
+    }
+    
     @objc private func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
-        if let cell = sender.view as? MonthCalDateCellView {
-            dateClickCompletion?(Date.dateFrom(string: "\(cell)-\(month)-\(year)", formate: "dd-mm-yyyy"))
+        if let cell = sender.view as? MonthCalDateCellView,
+          let aDate = dateWith(day: cell.dayNumber) {
+            self.delegate?.dateSelectorDidSelectDate(aDate)
         }
     }
     
@@ -75,12 +72,12 @@ class MonthDaySelectorView: UIView {
         for i in 1...daysInMonth {
             let cell = MonthCalDateCellView()
             cell.isSelected = i == selectedDateIndex
-            cell.dayNumber = i
+            cell.dayNumber = i            
             //Date.dateFrom(string: "\(i)-\(month)-\(year)", formate: "dd-mm-yyyy") ?? Date()
             rows.append(cell)
             addSubview(cell)
             cell.updateState()
-            
+
             let recognizer = UITapGestureRecognizer(target: self,
                                                     action: #selector(MonthDaySelectorView.dateLabelDidTap(_:)))
             cell.addGestureRecognizer(recognizer)
@@ -113,6 +110,16 @@ class MonthDaySelectorView: UIView {
             if weekIndx > 0, (weekIndx) % 7 == 0 { // last row reset
                 xx = gap
                 yy += cellSize
+            }
+        }
+    }
+    
+    func reloadDots() {
+        rows.forEach {
+            if let aDate = dateWith(day: $0.dayNumber) {
+                $0.showDot = self.delegate?.daySelectorShouldShowDotOn(date:aDate) ?? false
+            } else {
+                $0.showDot = false
             }
         }
     }

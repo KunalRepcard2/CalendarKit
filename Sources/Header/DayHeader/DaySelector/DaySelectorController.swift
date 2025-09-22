@@ -3,7 +3,7 @@ import UIKit
 public final class DaySelectorController: UIViewController {
     public private(set) lazy var daySelector = DaySelector()
     
-    public var delegate: DaySelectorDelegate? {
+    public var delegate: DaySelectorViewDelegate? {
         get {
             daySelector.delegate
         }

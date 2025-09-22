@@ -101,19 +101,16 @@ class MonthSelectorView: UIView {
         scrollView.scrollRectToVisible(targetFrame.insetBy(dx: -16, dy: 0), animated: animated)
     }
     
-    
-    @objc private func monthTapped(_ sender: UIButton) {
-        selectedIndex = sender.tag
-        // 👉 Callback to parent view controller can go here if needed
-        print("Selected month: \(viewModel.displayMonths[selectedIndex])")
-    }
-    
     private func updateSelection() {
         for (index, monthBtn) in monthButtons.enumerated() {
             monthBtn.isSelected = index == selectedIndex
         }
     }
 }
+
+
+
+
 
 class MonthButton : UIView {
     private let monthLabel: UILabel = {

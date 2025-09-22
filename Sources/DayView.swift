@@ -79,7 +79,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         didSet {
             dayHeaderView.state = state
             timelinePagerView.state = state
-            monthHeaderView.state = state
+//            monthHeaderView.state = state
         }
     }
     
@@ -135,6 +135,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             state = newState
         }
         self.dayHeaderView.headerDelegate = self
+        self.monthHeaderView.headerDelegate = self
         
         self.dayHeaderView.setDateClickCompletion { date in
             let str = date.stringWith(formate: "MMM d, yyyy")
@@ -199,6 +200,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         style = newStyle
         dayHeaderView.updateStyle(style.header)
         timelinePagerView.updateStyle(style.timeline)
+        monthHeaderView.updateStyle(style.header)
     }
     
     public func timelinePanGestureRequire(toFail gesture: UIGestureRecognizer) {
@@ -274,7 +276,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
 }
 
 
-extension DayView: DayHeaderViewDelegate {
+extension DayView: CalHeaderViewDelegate {
     func shouldShowDotOn(date: Date) -> Bool {
         return delegate?.dayView(shouldShowDotAt: date) ?? false
     }
