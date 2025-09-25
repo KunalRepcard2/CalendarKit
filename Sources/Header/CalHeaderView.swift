@@ -66,8 +66,3 @@ public class CalHeaderDaySelecterView: UIView {
     public weak var delegate: DaySelectorViewDelegate?
 }
 
-
-
-class CalDayViewDateHeaderView: UIView {
-    
-}

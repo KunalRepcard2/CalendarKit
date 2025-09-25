@@ -37,6 +37,13 @@ class MonthHeaderView: CalHeaderView {
         configure()
     }
     
+    public override func updateStyle(_ newStyle: DayHeaderStyle) {
+        super.updateStyle(newStyle)
+        (pagingViewController.viewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(newStyle.daySelector)}
+        backgroundColor = style.backgroundColor
+        separator.backgroundColor = style.separatorColor
+    }
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         var yy: CGFloat = 5
