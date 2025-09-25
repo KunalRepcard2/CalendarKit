@@ -6,6 +6,43 @@
 //
 import UIKit
 
+// only for month boxes
+class MonthSelectorViewModel {
+    private(set) var displayMonths = [String]()
+    static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
+    var selectedMonthIndex: Int = -1
+    
+    func prepareList(date: Date = Date()) {
+        displayMonths.removeAll()
+        let calendar = Calendar.current
+        let lastMonth: Date = calendar.date(byAdding: .month, value: -1, to: date) ?? date
+        for i in 0..<12 {
+            if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
+                let dtStr = nextMonth.stringWith(formate: MonthSelectorViewModel.storageFormate)
+                displayMonths.append(dtStr)
+            }
+        }
+    }
+     
+    func calculateSelectedMonthIndex(date: Date) {
+        let calendar = Calendar.current
+        guard let aDt = calendar.date(byAdding: .month, value: 0, to: date) else {
+            selectedMonthIndex = -1
+            return
+        }
+
+        let dtStr = aDt.stringWith(formate: MonthSelectorViewModel.storageFormate)
+        let indx = displayMonths.firstIndex(of: dtStr) ?? -1
+        selectedMonthIndex = indx
+    }
+    
+    func dateAtIndex(_ index: Int) -> Date {
+        guard index >= 0 && index < displayMonths.count else { return Date() }
+        return Date.dateFrom(string: displayMonths[index],
+                             formate: MonthSelectorViewModel.storageFormate) ?? Date()
+    }
+}
+
 class MonthSelectorView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -19,11 +56,9 @@ class MonthSelectorView: UIView {
     
     private let buttonSize: CGSize = CGSize(width: 65, height: 40)
     
-    var selectedIndex: Int = 1 {
-        didSet {
-            self.updateSelection()
-            self.scrollToMonth(at: selectedIndex)
-        }
+    func updateSelectedMonth() {
+        self.updateSelection()
+        self.scrollToMonth(at: viewModel.selectedMonthIndex)
     }
     
     var onChangeOfMonth: ((_ index: Int) -> Void)? // 1-month-year
@@ -70,13 +105,14 @@ class MonthSelectorView: UIView {
         monthButtons.forEach{$0.removeFromSuperview()}
         monthButtons.removeAll()
         
-        for (index, monthDate) in viewModel.displayMonths.enumerated() {
+        for (index, dtStr) in viewModel.displayMonths.enumerated() {
             let monthView = MonthButton()
-            monthView.configureMonth(date: monthDate)
+            monthView.configureMonth(dtStr)
             monthView.tag = index
             monthView.onMonthButtonTap = {
-                print("Tapped: \(monthDate)  - \(index)")
-                self.selectedIndex = index
+                print("Tapped: \(dtStr)  - \(index)")
+                self.viewModel.selectedMonthIndex = index
+                self.updateSelectedMonth()
                 self.onChangeOfMonth?(index)
             }
             
@@ -103,13 +139,10 @@ class MonthSelectorView: UIView {
     
     private func updateSelection() {
         for (index, monthBtn) in monthButtons.enumerated() {
-            monthBtn.isSelected = index == selectedIndex
+            monthBtn.isSelected = index == viewModel.selectedMonthIndex
         }
     }
 }
-
-
-
 
 
 class MonthButton : UIView {
@@ -178,9 +211,8 @@ class MonthButton : UIView {
         self.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
     }
     
-    func configureMonth(date: Date) {
-        let dtStr = date.stringWith(formate: MonthSelectorViewModel.storageFormate)
-        let arr = dtStr.components(separatedBy: "-")
+    func configureMonth(_ month: String) {
+        let arr = month.components(separatedBy: "-")
         monthLabel.text = arr.first
         yearLabel.text = arr.last
     }

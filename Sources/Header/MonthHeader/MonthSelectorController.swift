@@ -39,6 +39,12 @@ public final class MonthSelectorController: UIViewController {
         }
     }
     
+    var rowInLineCount: Int {
+        get {
+            monthDaySelector.rowInLineCount
+        }
+    }
+    
     func reloadDots() {
         monthDaySelector.reloadDots()
     }

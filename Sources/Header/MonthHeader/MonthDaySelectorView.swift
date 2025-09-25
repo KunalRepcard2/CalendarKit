@@ -9,17 +9,15 @@ import UIKit
 
 class MonthDaySelectorView: CalHeaderDaySelecterView {
     private var rows : [MonthCalDateCellLabel] = []
-    var totalHeight: CGFloat = 0
-    var selectedDateIndex: Int = 1
-    
     private(set) var month = 1
     private(set) var year = 2025
     private var daysInMonth: Int = 30
     private let cellSize: CGFloat = 40
-    
     private var emptyDaysBeforeFirstDay : Int = 0 // begin from sun
     private var style = DaySelectorStyle()
 
+    var selectedDateIndex: Int = 1
+    private(set) var rowInLineCount: Int = 5
     
     var monthRepresentDate: Date = Date() {
         didSet{
@@ -68,9 +66,6 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     }
     
     private func initializeViews() {
-        // Store last selected date
-//        let lastSelectedDate = selectedDate
-        
         // Remove previous Items
         rows.forEach{$0.removeFromSuperview()}
         rows.removeAll()
@@ -108,6 +103,7 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
         let sz = CGSize(width: cellSize, height: cellSize)
         
 //        var weekIndx = emptyDaysBeforeFirstDay
+        var inlineR = 1
         for indx in 0..<rows.count {
             let cellV = rows[indx]
             
@@ -119,8 +115,10 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
             if weekIndx > 0, (weekIndx) % 7 == 0 { // last row reset
                 xx = gap
                 yy += cellSize
+                inlineR += 1
             }
         }
+        rowInLineCount = inlineR
     }
     
     func reloadDots() {

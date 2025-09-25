@@ -9,19 +9,28 @@ import UIKit
 
 protocol CalHeaderViewDelegate: AnyObject {
     func shouldShowDotOn(date: Date) -> Bool
+    // called to notify it's parent when any hieght is changed
+    // [Mostly happened once number of rows in Month view changed due to the change of days in months and their positions]
+    func refreshOnHeightChange()
 }
+
 
 public class CalHeaderView: UIView {
     public let calendar: Calendar
     let daySymbolsView: DaySymbolsView
     private(set) var style = DayHeaderStyle()
+  
     var headerDelegate: CalHeaderViewDelegate?
     var selectedDate: Date = Date() {
         didSet {
             reloadOnDateChange()
         }
     }
-
+    
+    let pagingViewController = UIPageViewController(transitionStyle: .scroll,
+                                                    navigationOrientation: .horizontal,
+                                                    options: nil)
+    
     public init(calendar: Calendar) {
         self.calendar = calendar
         self.daySymbolsView = DaySymbolsView(calendar: calendar)
@@ -38,13 +47,10 @@ public class CalHeaderView: UIView {
         daySymbolsView.updateStyle(style.daySymbols)
     }
     
-    public func reloadOnDateChange() {
-        
-    }
+    // change in selected date change
+    public func reloadOnDateChange() { }
     
-    public func reloadDotsOnPage() {
-        
-    }
+    public func reloadDotsOnPage() { }
     
     public func display(loader: Bool) {
         // add loader in case loading dots in background..

@@ -24,23 +24,13 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     }
     
     public weak var delegate: DayViewDelegate?
-    
-    /// Hides or shows header view
-//    public var isHeaderViewVisible = true {
-//        didSet {
-//            headerHeight = isHeaderViewVisible ? DayView.headerVisibleHeightD : DayView.headerVisibleHeightM
-//            dayHeaderView.isHidden = !isHeaderViewVisible
-//            setNeedsLayout()
-//            configureLayout()
-//        }
-//    }
-    
+        
     var isMonthHeaderActive: Bool = false {
         didSet {
             self.monthHeaderView.isHidden = !isMonthHeaderActive
             self.dayHeaderView.isHidden = isMonthHeaderActive
-            dayHieghtConstraint.constant = isMonthHeaderActive ? 0 : DayView.headerVisibleHeightD
-            monthHieghtConstraint.constant = isMonthHeaderActive ? DayView.headerVisibleHeightM : 0
+            dayHieghtConstraint.constant = isMonthHeaderActive ? 0 : self.headerVisibleHeightD
+            monthHieghtConstraint.constant = isMonthHeaderActive ? self.headerVisibleHeightM : 0
           
             timelineTopToDay.isActive = !isMonthHeaderActive
             timelineTopToMonth.isActive = isMonthHeaderActive
@@ -56,11 +46,12 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         timelinePagerView.timelineScrollOffset
     }
     
-    private static let headerVisibleHeightD: Double = 115 // earlier 95
-    private static let headerVisibleHeightM: Double = MonthHeaderView.totalHeight
+    private let headerVisibleHeightD: Double = 115 // earlier 95
+    private var headerVisibleHeightM: Double {
+        return monthHeaderView.totalHeight
+    }
         
 //    public var headerHeight: Double = headerVisibleHeightD
-    
     
     public var autoScrollToFirstEvent: Bool {
         get {
@@ -147,6 +138,8 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         
         self.monthHeaderView.setDateClickCompletion { date in
             if let aDate = date {
+                let str = aDate.stringWith(formate: "dd-MM-yyyy")
+                print("Month Header date selected\(str)")
                 self.dayHeaderView.selectedDate = aDate
             }
             self.isMonthHeaderActive = false
@@ -164,7 +157,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
         timelinePagerView.translatesAutoresizingMaskIntoConstraints = false
 
-        let dayH = isMonthHeaderActive ? 0 : DayView.headerVisibleHeightD
+        let dayH = isMonthHeaderActive ? 0 : self.headerVisibleHeightD
 
         dayHeaderView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         dayHeaderView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
@@ -173,7 +166,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         dayHieghtConstraint.priority = .defaultLow
         dayHieghtConstraint.isActive = true
              
-        let monthH = isMonthHeaderActive ? DayView.headerVisibleHeightM : 0
+        let monthH = isMonthHeaderActive ? self.headerVisibleHeightM : 0
         monthHeaderView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         monthHeaderView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
         monthHeaderView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
@@ -183,7 +176,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
 //        let bAnchor: NSLayoutYAxisAnchor = isMonthHeaderActive ? monthHeaderView.bottomAnchor : dayHeaderView.bottomAnchor
         
-        let tileLineH = isMonthHeaderActive ? DayView.headerVisibleHeightM : DayView.headerVisibleHeightD
+        let tileLineH = isMonthHeaderActive ? self.headerVisibleHeightM : self.headerVisibleHeightD
 
         timelinePagerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         timelinePagerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
@@ -283,5 +276,17 @@ public class DayView: UIView, TimelinePagerViewDelegate {
 extension DayView: CalHeaderViewDelegate {
     func shouldShowDotOn(date: Date) -> Bool {
         return delegate?.dayView(shouldShowDotAt: date) ?? false
+    }
+    
+    func refreshOnHeightChange() { // no change in Weekly header
+        if isMonthHeaderActive {
+            monthHieghtConstraint.constant = self.headerVisibleHeightM
+            timelineTopToMonth = timelinePagerView.topAnchor.constraint(equalTo: monthHeaderView.bottomAnchor)
+            timelineTopToMonth.isActive = true
+            UIView.animate(withDuration: 0.3) {
+                self.setNeedsLayout()
+            }
+        }
+        
     }
 }

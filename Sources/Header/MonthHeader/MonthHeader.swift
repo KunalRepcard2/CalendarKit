@@ -7,44 +7,24 @@
 
 import UIKit
 
-// only for month boxes
-class MonthSelectorViewModel {
-    private(set) var displayMonths = [Date]()
-    static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
-    
-    func prepareList(date: Date) {
-        displayMonths.removeAll()
-        let calendar = Calendar.current
-        let lastMonth: Date = calendar.date(byAdding: .month, value: -1, to: date) ?? date
-        for i in 0..<12 {
-            if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
-                displayMonths.append(nextMonth)
-            }
-        }
-    }
+
+private extension MonthHeaderView {
+    static let daySymbolsViewHeight: Double = 20
+    static let monthSelectorViewHeight: Double = 60
 }
 
-
-class MonthHeaderView: CalHeaderView {    
+class MonthHeaderView: CalHeaderView {
     private var monthSelectorView: MonthSelectorView
-    private let viewModel = MonthSelectorViewModel()
+    private let viewModel = MonthSelectorViewModel() // common view model in between Months list at bottom and this view
     private var selectedDay = 5 // we may pass 1---31
     
-    
-    
-    private var pagingViewController = UIPageViewController(transitionStyle: .scroll,
-                                                            navigationOrientation: .horizontal,
-                                                            options: nil)
-    private static let daySymbolsViewHeight: Double = 20
-    private static let pagingScrollViewHeight: Double = 40 * 5
-    private static let monthSelectorViewHeight: Double = 60
-    
-    class var totalHeight: Double {
-        return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + MonthHeaderView.pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight
+    var totalHeight: Double {
+        return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight + 15
     }
     
+    private var pagingScrollViewHeight: Double  = 205
     private var dateClickCompletion: ((Date?) -> Void)?
-
+    
     private lazy var separator: UIView = {
         let separator = UIView()
         separator.backgroundColor = SystemColors.systemSeparator
@@ -62,20 +42,20 @@ class MonthHeaderView: CalHeaderView {
         var yy: CGFloat = 5
         daySymbolsView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
                                       size: CGSize(width: bounds.width, height: MonthHeaderView.daySymbolsViewHeight))
-       
+        
         yy += MonthHeaderView.daySymbolsViewHeight + 5
         pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: yy),
-                                                  size: CGSize(width: bounds.width, height: MonthHeaderView.pagingScrollViewHeight))
+                                                  size: CGSize(width: bounds.width, height: pagingScrollViewHeight))
         
-        yy += MonthHeaderView.pagingScrollViewHeight + 5
+        yy += self.pagingScrollViewHeight + 5
         monthSelectorView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
                                          size: CGSize(width: bounds.width, height: MonthHeaderView.monthSelectorViewHeight))
-
+        
         let separatorHeight = 1 / UIScreen.main.scale
         separator.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - separatorHeight),
                                  size: CGSize(width: bounds.width, height: separatorHeight))
     }
-        
+    
     public override func reloadDotsOnPage() {
         super.reloadDotsOnPage()
         guard let pageC = pagingViewController.viewControllers?.first as? MonthSelectorController else { return }
@@ -83,7 +63,8 @@ class MonthHeaderView: CalHeaderView {
     }
     
     public override func reloadOnDateChange() {
-        self.viewModel.prepareList(date: selectedDate)
+        self.viewModel.calculateSelectedMonthIndex(date: selectedDate)
+        self.monthSelectorView.updateSelectedMonth()
         selectedDay = Calendar.current.component(.day, from: selectedDate)
         configurePagingViewController()
         reloadDotsOnPage()
@@ -92,8 +73,10 @@ class MonthHeaderView: CalHeaderView {
     func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
         self.dateClickCompletion = block
     }
-    
-    private func configure() {
+}
+
+private extension MonthHeaderView {
+     func configure() {
         self.viewModel.prepareList(date: selectedDate)
         selectedDay = Calendar.current.component(.day, from: selectedDate)
 
@@ -116,14 +99,20 @@ class MonthHeaderView: CalHeaderView {
         if let visibleVC = self.pagingViewController.viewControllers?.first as? MonthSelectorController {
             direction = visibleVC.pageIndex > index ? .reverse : .forward
         }
-        pagingViewController.setViewControllers([vc], direction: direction, animated: animated, completion: nil)
+//        pagingViewController.setViewControllers([vc], direction: direction, animated: animated, completion: nil)
+        
+        pagingViewController.setViewControllers([vc], direction: direction, animated: animated) { completed in
+            if completed {
+                self.updateHeightAsPerRow()
+            }
+        }
     }
 }
 
 
 private extension MonthHeaderView {
      func configurePagingViewController() {
-         let monthSelectorController = viewControllerAt(index: 1)
+        let monthSelectorController = viewControllerAt(index: 1)
 
         let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
         let direction: UIPageViewController.NavigationDirection = leftToRight ? .forward : .reverse
@@ -140,8 +129,19 @@ private extension MonthHeaderView {
         monthSelController.pageIndex = index
         monthSelController.updateStyle(style.daySelector)
         monthSelController.selectedDateIndex = selectedDay
-        monthSelController.monthRepresentDate = viewModel.displayMonths[index]
+        monthSelController.monthRepresentDate = viewModel.dateAtIndex(index)
         return monthSelController
+    }
+    
+    func updateHeightAsPerRow() {
+        var rCount = 5
+        if let pageC = pagingViewController.viewControllers?.first as? MonthSelectorController {
+            rCount = pageC.rowInLineCount
+        }
+       
+        self.pagingScrollViewHeight = Double(40 * rCount) + 5
+        self.layoutSubviews()
+        self.headerDelegate?.refreshOnHeightChange()
     }
 }
 
@@ -176,9 +176,9 @@ extension MonthHeaderView: UIPageViewControllerDelegate {
                             transitionCompleted completed: Bool) {
        
         guard completed, let currentVC = pageViewController.viewControllers?.first as? MonthSelectorController else { return }
-                
-        let index = currentVC.pageIndex
-        self.monthSelectorView.selectedIndex = index
+        self.viewModel.selectedMonthIndex = currentVC.pageIndex
+        self.monthSelectorView.updateSelectedMonth()
+        self.updateHeightAsPerRow()
     }
 }
 
@@ -201,3 +201,15 @@ extension MonthHeaderView: DayViewStateUpdating {
 //        let newDate = newDate.dateOnly(calendar: calendar)
     }
 }
+
+
+
+/*
+ {
+     var rCount = 5
+     if let pageC = pagingViewController.viewControllers?.first as? MonthSelectorController {
+         rCount = pageC.rowInLineCount
+     }
+     return Double(40 * rCount) + 5
+ }
+ */

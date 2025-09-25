@@ -1,8 +1,13 @@
 import UIKit
 
+private extension DayHeaderView {
+    static let daySymbolsViewHeight: Double = 20
+    static let pagingScrollViewHeight: Double = 45
+    static let swipeLabelViewHeight: Double = 20
+    static let daysInWeek = 7
+}
+
 public final class DayHeaderView: CalHeaderView {
-    public private(set) var daysInWeek = 7
-    
     private var currentSizeClass = UIUserInterfaceSizeClass.compact
     
     public weak var state: DayViewState? {
@@ -15,15 +20,8 @@ public final class DayHeaderView: CalHeaderView {
         }
     }
     
-    private var currentWeekdayIndex = -1
+    private var currentWeekdayIndex = -1  
     
-    private var daySymbolsViewHeight: Double = 20
-    private var pagingScrollViewHeight: Double = 45
-    private var swipeLabelViewHeight: Double = 20
-    
-    private var pagingViewController = UIPageViewController(transitionStyle: .scroll,
-                                                            navigationOrientation: .horizontal,
-                                                            options: nil)
     private var swipeLabelView: SwipeLabelView
     private lazy var separator: UIView = {
         let separator = UIView()
@@ -109,12 +107,12 @@ public final class DayHeaderView: CalHeaderView {
         super.layoutSubviews()
         var yy: CGFloat = 5
         daySymbolsView.frame = CGRect(origin: CGPoint(x: 0, y: yy),
-                                      size: CGSize(width: bounds.width, height: daySymbolsViewHeight))
-        yy += daySymbolsViewHeight + 5
+                                      size: CGSize(width: bounds.width, height: DayHeaderView.daySymbolsViewHeight))
+        yy += DayHeaderView.daySymbolsViewHeight + 5
         pagingViewController.view?.frame = CGRect(origin: CGPoint(x: 0, y: yy),
-                                                  size: CGSize(width: bounds.width, height: pagingScrollViewHeight))
-        swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 5 - swipeLabelViewHeight),
-                                      size: CGSize(width: bounds.width, height: swipeLabelViewHeight))
+                                                  size: CGSize(width: bounds.width, height: DayHeaderView.pagingScrollViewHeight))
+        swipeLabelView.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - 5 - DayHeaderView.swipeLabelViewHeight),
+                                      size: CGSize(width: bounds.width, height: DayHeaderView.swipeLabelViewHeight))
         
         let separatorHeight = 1 / UIScreen.main.scale
         separator.frame = CGRect(origin: CGPoint(x: 0, y: bounds.height - separatorHeight),
@@ -144,14 +142,14 @@ extension DayHeaderView : DayViewStateUpdating {
         let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
         
         if daysFrom < 0 {
-            currentWeekdayIndex = abs(daysInWeek + daysFrom % daysInWeek) % daysInWeek
+            currentWeekdayIndex = abs(DayHeaderView.daysInWeek + daysFrom % DayHeaderView.daysInWeek) % DayHeaderView.daysInWeek
             new.selectedIndex = currentWeekdayIndex
             
             let direction: UIPageViewController.NavigationDirection = leftToRight ? .reverse : .forward
             
             pagingViewController.setViewControllers([new], direction: direction, animated: true, completion: nil)
-        } else if daysFrom > daysInWeek - 1 {
-            currentWeekdayIndex = daysFrom % daysInWeek
+        } else if daysFrom > DayHeaderView.daysInWeek - 1 {
+            currentWeekdayIndex = daysFrom % DayHeaderView.daysInWeek
             new.selectedIndex = currentWeekdayIndex
             
             let direction: UIPageViewController.NavigationDirection = leftToRight ? .forward : .reverse
