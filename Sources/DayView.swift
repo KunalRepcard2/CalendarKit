@@ -31,14 +31,14 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             self.dayHeaderView.isHidden = isMonthHeaderActive
             dayHieghtConstraint.constant = isMonthHeaderActive ? 0 : self.headerVisibleHeightD
             monthHieghtConstraint.constant = isMonthHeaderActive ? self.headerVisibleHeightM : 0
-          
+        
             timelineTopToDay.isActive = !isMonthHeaderActive
             timelineTopToMonth.isActive = isMonthHeaderActive
             
             UIView.animate(withDuration: 0.3) {
                 self.setNeedsLayout()
-                self.reloadDotsOnHeader()
             }
+            self.reloadDotsOnHeader()
         }
     }
     
@@ -281,8 +281,6 @@ extension DayView: CalHeaderViewDelegate {
     func refreshOnHeightChange() { // no change in Weekly header
         if isMonthHeaderActive {
             monthHieghtConstraint.constant = self.headerVisibleHeightM
-            timelineTopToMonth = timelinePagerView.topAnchor.constraint(equalTo: monthHeaderView.bottomAnchor)
-            timelineTopToMonth.isActive = true
             UIView.animate(withDuration: 0.3) {
                 self.setNeedsLayout()
             }
