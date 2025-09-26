@@ -73,13 +73,10 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
         
         // Create new with corresponding class
         for i in 1...daysInMonth {
-            let cell = MonthCalDateCellLabel()
-            cell.isSelected = i == selectedDateIndex
-            cell.dayNumber = i            
-            //Date.dateFrom(string: "\(i)-\(month)-\(year)", formate: "dd-mm-yyyy") ?? Date()
+            let cell = MonthCalDateCellLabel.cellWith(day: i, month: month, year: year,
+                                                      selected: i == selectedDateIndex)
             rows.append(cell)
             addSubview(cell)
-            cell.updateState()
 
             let recognizer = UITapGestureRecognizer(target: self,
                                                     action: #selector(MonthDaySelectorView.dateLabelDidTap(_:)))

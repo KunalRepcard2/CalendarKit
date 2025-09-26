@@ -66,4 +66,13 @@ extension Date {
         }
         return range.count
     }
+    
+    var isToday: Bool {
+        return Calendar.current.isDateInToday(self)
+    }
+    
+    var isAWeekend : Bool {
+        let weekday = Calendar.current.component(.weekday, from: self)
+        return weekday == 7 || weekday == 1
+    }
 }

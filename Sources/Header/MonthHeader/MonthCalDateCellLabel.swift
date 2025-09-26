@@ -9,43 +9,26 @@ import UIKit
 
 class MonthCalDateCellLabel: UILabel {
     private var style = DaySelectorStyle()
+    private(set) var isSelected = false
+    private(set) var dayNumber: Int = 0 {
+        didSet {
+            text = "\(dayNumber)"
+        }
+    }
     
-    var isSelected = false
-    var isToday = false
-    var isWeekend = false
+    private var isToday = false
+    private var isWeekend = false
+   
     var showDot: Bool = false {
         didSet {
             addDotTag(showDot, color: isSelected ? style.selectedDotColor : style.dotColor)
         }
     }
     
-    var dayNumber: Int = 0 {
-        didSet {
-            text = "\(dayNumber)"
-        }
-    }
-    
-    public func updateStyle(_ newStyle: DaySelectorStyle) {
-        style = newStyle
-        self.updateState()
-    }
-
-    func updateState() {
-        let today = isToday
-        if isSelected {
-            font = style.todayFont
-            textColor = today ? style.todayActiveTextColor : style.activeTextColor
-            backgroundColor = today ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
-        } else {
-            let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
-            font = style.font
-            textColor = today ? style.todayInactiveTextColor : notTodayColor
-            backgroundColor = style.inactiveBackgroundColor
-        }
-    }
-    
-    override public var intrinsicContentSize: CGSize {
-        CGSize(width: 40, height: 40)
+    class func cellWith(day: Int, month: Int, year: Int, selected: Bool) -> MonthCalDateCellLabel {
+        let cell = MonthCalDateCellLabel()
+        cell.set(day: day, month: month, year: year, selected: selected)
+        return cell
     }
 
     override init(frame: CGRect) {
@@ -61,10 +44,46 @@ class MonthCalDateCellLabel: UILabel {
     override public func layoutSubviews() {
         layer.cornerRadius = bounds.height / 2
     }
-   
+    
+    override public var intrinsicContentSize: CGSize {
+        CGSize(width: 40, height: 40)
+    }
+}
+    
+extension MonthCalDateCellLabel {
+    func updateStyle(_ newStyle: DaySelectorStyle) {
+        style = newStyle
+        self.updateState()
+    }
+}
+
+private extension MonthCalDateCellLabel {
     private func configure() {
         isUserInteractionEnabled = true
         textAlignment = .center
         clipsToBounds = true
+    }
+    
+    func set(day: Int, month: Int, year: Int, selected: Bool) {
+        dayNumber = day
+        let date = Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-MM-yyyy")
+        isToday = date?.isToday ?? false
+        isWeekend = date?.isAWeekend ?? false
+        isSelected = selected
+        self.updateState()
+    }
+    
+    
+    private func updateState() {
+        if isSelected {
+            font = style.todayFont
+            textColor = isToday ? style.todayActiveTextColor : style.activeTextColor
+            backgroundColor = isToday ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
+        } else {
+            let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
+            font = style.font
+            textColor = isToday ? style.todayInactiveTextColor : notTodayColor
+            backgroundColor = style.inactiveBackgroundColor
+        }
     }
 }
