@@ -39,7 +39,7 @@ class MonthHeaderView: CalHeaderView {
     
     public override func updateStyle(_ newStyle: DayHeaderStyle) {
         super.updateStyle(newStyle)
-        (pagingViewController.viewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(newStyle.daySelector)}
+//        (pagingViewController.viewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(newStyle.daySelector)}
         backgroundColor = style.backgroundColor
         separator.backgroundColor = style.separatorColor
     }
@@ -106,7 +106,6 @@ private extension MonthHeaderView {
         if let visibleVC = self.pagingViewController.viewControllers?.first as? MonthSelectorController {
             direction = visibleVC.pageIndex > index ? .reverse : .forward
         }
-//        pagingViewController.setViewControllers([vc], direction: direction, animated: animated, completion: nil)
         
         pagingViewController.setViewControllers([vc], direction: direction, animated: animated) { completed in
             if completed {
@@ -118,8 +117,8 @@ private extension MonthHeaderView {
 
 
 private extension MonthHeaderView {
-     func configurePagingViewController() {
-        let monthSelectorController = viewControllerAt(index: 1)
+    func configurePagingViewController() {
+        let monthSelectorController = viewControllerAt(index: self.viewModel.selectedMonthIndex)
 
         let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
         let direction: UIPageViewController.NavigationDirection = leftToRight ? .forward : .reverse
@@ -128,13 +127,13 @@ private extension MonthHeaderView {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
         addSubview(pagingViewController.view!)
+        monthSelectorController.updateStyle(style.daySelector)
     }
     
     func viewControllerAt(index: Int) -> MonthSelectorController {
         let monthSelController = MonthSelectorController()
         monthSelController.delegate = self
         monthSelController.pageIndex = index
-        monthSelController.updateStyle(style.daySelector)
         monthSelController.selectedDateIndex = selectedDay
         monthSelController.monthRepresentDate = viewModel.dateAtIndex(index)
         return monthSelController
@@ -149,11 +148,13 @@ private extension MonthHeaderView {
         self.pagingScrollViewHeight = Double(40 * rCount) + 5
         self.layoutSubviews()
         self.headerDelegate?.refreshOnHeightChange()
+        (pagingViewController.viewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(style.daySelector)}
+
     }
 }
 
-
-extension MonthHeaderView: UIPageViewControllerDataSource {
+// MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
+extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     // UIPageViewControllerDataSource
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let selector = viewController as? MonthSelectorController,
@@ -174,9 +175,11 @@ extension MonthHeaderView: UIPageViewControllerDataSource {
         let indx = selector.pageIndex + 1
         return viewControllerAt(index: indx) // next
     }
-}
+    
+    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        (pendingViewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(style.daySelector)}
+    }
 
-extension MonthHeaderView: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController,
                             didFinishAnimating finished: Bool,
                             previousViewControllers: [UIViewController],
@@ -192,7 +195,7 @@ extension MonthHeaderView: UIPageViewControllerDelegate {
 // MARK: DaySelectorViewDelegate
 extension MonthHeaderView : DaySelectorViewDelegate {
     public func dateSelectorDidSelectDate(_ date: Date) {
-//        state?.move(to: date)
+        print(date.stringWith(formate: "dd-MM-yyyy"))
         self.dateClickCompletion?(date)
     }
     
@@ -205,18 +208,6 @@ extension MonthHeaderView : DaySelectorViewDelegate {
 // MARK: DayViewStateUpdating
 extension MonthHeaderView: DayViewStateUpdating {
     public func move(from oldDate: Date, to newDate: Date) {
-//        let newDate = newDate.dateOnly(calendar: calendar)
     }
 }
 
-
-
-/*
- {
-     var rCount = 5
-     if let pageC = pagingViewController.viewControllers?.first as? MonthSelectorController {
-         rCount = pageC.rowInLineCount
-     }
-     return Double(40 * rCount) + 5
- }
- */

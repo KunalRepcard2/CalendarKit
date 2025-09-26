@@ -51,7 +51,8 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     
     public func updateStyle(_ newStyle: DaySelectorStyle) {
         style = newStyle
-        rows.forEach{$0.updateStyle(style)}
+        rows.filter({$0.isSelected}).forEach{$0.updateStyle(style)}
+//        rows.forEach{$0.updateStyle(style)} // we can implement only selected items
     }
     
     private func dateWith(day: Int) -> Date? {

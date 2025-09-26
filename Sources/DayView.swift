@@ -70,7 +70,6 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         didSet {
             dayHeaderView.state = state
             timelinePagerView.state = state
-//            monthHeaderView.state = state
         }
     }
     

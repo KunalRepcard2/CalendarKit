@@ -32,6 +32,7 @@ class MonthSelectorViewModel {
         }
 
         let dtStr = aDt.stringWith(formate: MonthSelectorViewModel.storageFormate)
+        print("Month selector - > \(dtStr)")
         let indx = displayMonths.firstIndex(of: dtStr) ?? -1
         selectedMonthIndex = indx
     }
