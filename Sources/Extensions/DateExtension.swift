@@ -75,4 +75,9 @@ extension Date {
         let weekday = Calendar.current.component(.weekday, from: self)
         return weekday == 7 || weekday == 1
     }
+    
+    var isPastDate : Bool {
+        let calendar = Calendar.current
+        return calendar.startOfDay(for: Date()) > calendar.startOfDay(for: self)
+    }
 }

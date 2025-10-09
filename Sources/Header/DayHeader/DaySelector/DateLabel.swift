@@ -76,7 +76,8 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             }
             
         } else {
-            let notTodayColor = isAWeekend(date: date) ? style.weekendTextColor : style.inactiveTextColor
+            let notTodayColor = date.isPastDate ? style.weekendTextColor : style.inactiveTextColor
+            //isAWeekend(date: date) ? style.weekendTextColor : style.inactiveTextColor
             font = style.font
             textColor = today ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
