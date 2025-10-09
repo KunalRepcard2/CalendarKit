@@ -27,10 +27,11 @@ public struct DayHeaderStyle {
     public init() {}
 }
 
-public struct DaySelectorStyle {
-    public var activeTextColor = SystemColors.systemBackground
-    public var selectedBackgroundColor = UIColor(hex: "#2E90FA")
 
+public struct DaySelectorStyle {
+    public var activeTextColor = UIColor.black // no change for other than today
+    //SystemColors.systemBackground
+    public var selectedBackgroundColor = UIColor.clear
 
     public var weekendTextColor = SystemColors.secondaryLabel
     public var inactiveTextColor = SystemColors.label
@@ -38,13 +39,16 @@ public struct DaySelectorStyle {
 
     public var todayInactiveTextColor = SystemColors.systemRed
     public var todayActiveTextColor = UIColor.white
-    public var todayActiveBackgroundColor = SystemColors.systemRed
+    public var todayActiveBackgroundColor = UIColor(hex: "2E90FA")
     
     public var dotColor = UIColor(hex: "3F3F46")
-    public var selectedDotColor = UIColor(hex: "FFFFFF")
-    
+    public var selectedDotColor = UIColor(hex: "3F3F46")
+    public var todaySelectedDotColor = UIColor(hex: "FFFFFF")
+
     public var font = UIFont.systemFont(ofSize: 18)
     public var todayFont = UIFont.boldSystemFont(ofSize: 18)
+    
+    public var selectedBorderColor = UIColor(hex: "#2E90FA")
 
     public init() {}
 }
@@ -81,7 +85,8 @@ public struct TimelineStyle {
 }
 
 public struct CurrentTimeIndicatorStyle {
-    public var color = SystemColors.systemRed
+    public var color = UIColor(hex: "2E90FA")
+    //SystemColors.systemRed
     public var font = UIFont.systemFont(ofSize: 11)
     public var dateStyle : DateStyle = .system
     public init() {}

@@ -3,7 +3,7 @@ import UIKit
 private extension DayHeaderView {
     static let daySymbolsViewHeight: Double = 20
     static let pagingScrollViewHeight: Double = 45
-    static let swipeLabelViewHeight: Double = 20
+    static let swipeLabelViewHeight: Double = 1//20
     static let daysInWeek = 7
 }
 
@@ -56,6 +56,7 @@ public final class DayHeaderView: CalHeaderView {
         [daySymbolsView, swipeLabelView, separator].forEach(addSubview)
         backgroundColor = style.backgroundColor
         configurePagingViewController()
+        swipeLabelView.isHidden = true // --Prakash check if Months required..
     }
     
     private func configurePagingViewController() {
