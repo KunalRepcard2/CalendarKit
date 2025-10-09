@@ -5,7 +5,7 @@ open class EventView: UIView {
     public var color = UIColor.systemPink
     
     var maxFontSize: CGFloat = 12   // upper limit
-    var minFontSize: CGFloat = 8   // lower limit
+    var minFontSize: CGFloat = 10   // lower limit
     var scaleFactor: CGFloat = 0.3  // % of parent height used as font size
     
     public var contentHeight: Double {
@@ -23,7 +23,7 @@ open class EventView: UIView {
     private let stripedView: StripedBackgroundView = {
         let view = StripedBackgroundView()
         view.backgroundColor = .clear
-        view.alpha = 0.3
+        view.alpha = 0.1
         return view
     }()
     
@@ -90,8 +90,8 @@ open class EventView: UIView {
         // Update background
         backgroundColor = .clear
         layer.cornerRadius = 4
-        if layer.backgroundColor != event.backgroundColor.withAlphaComponent(0.3).cgColor {
-            layer.backgroundColor = event.backgroundColor.withAlphaComponent(0.3).cgColor
+        if layer.backgroundColor != event.backgroundColor.withAlphaComponent(0.1).cgColor {
+            layer.backgroundColor = event.backgroundColor.withAlphaComponent(0.1).cgColor
         }
         
         color = event.color

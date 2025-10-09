@@ -73,7 +73,8 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         }
     }
     
-    public var calendar: Calendar = Calendar.autoupdatingCurrent
+    public var calendar: Calendar = Calendar.current
+    //autoupdatingCurrent
     
     public var eventEditingSnappingBehavior: EventEditingSnappingBehavior {
         get {
