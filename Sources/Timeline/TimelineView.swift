@@ -483,27 +483,43 @@ public final class TimelineView: UIView {
         overlappingEvents.removeAll()
 
         for overlappingEvents in groupsOfEvents {
-            let filteredEvents = overlappingEvents.filter { !$0.descriptor.isTimeOff }
-            let timeOffFilteredEvents = overlappingEvents.filter { $0.descriptor.isTimeOff }
-            let totalCount = Double(filteredEvents.count)
-            
-            for (index, event) in filteredEvents.enumerated() {
-                let startY = dateToY(event.descriptor.dateInterval.start)
-                let endY = dateToY(event.descriptor.dateInterval.end)
-                let floatIndex = Double(index)
-                let x = style.leadingInset + floatIndex / totalCount * calendarWidth
-                let equalWidth = calendarWidth / totalCount
-                event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
-            }
-            
-            for (_, event) in timeOffFilteredEvents.enumerated() {
-                let startY = dateToY(event.descriptor.dateInterval.start)
-                let endY = dateToY(event.descriptor.dateInterval.end)
-                let x = style.leadingInset
-                let equalWidth = calendarWidth
-                event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+            let groupedEvents = Dictionary(grouping: overlappingEvents, by: { $0.descriptor.dateInterval.start })
+            let groups = Array(groupedEvents.values)
+            for (_, group) in groups.enumerated() {
+                let totalSameStartTimeCount = Double(group.count)
+                for (indexEvent, event) in group.enumerated() {
+                    let startY = dateToY(event.descriptor.dateInterval.start)
+                    let endY = dateToY(event.descriptor.dateInterval.end)
+                    let floatIndex = Double(indexEvent)
+                    let x = style.leadingInset + floatIndex / totalSameStartTimeCount * calendarWidth
+                    let equalWidth = calendarWidth / totalSameStartTimeCount
+                    event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+                }
             }
         }
+        
+//        for overlappingEvents in groupsOfEvents {
+//            let filteredEvents = overlappingEvents.filter { !$0.descriptor.isTimeOff }
+//            let timeOffFilteredEvents = overlappingEvents.filter { $0.descriptor.isTimeOff }
+//            let totalCount = Double(filteredEvents.count)
+//            
+//            for (index, event) in filteredEvents.enumerated() {
+//                let startY = dateToY(event.descriptor.dateInterval.start)
+//                let endY = dateToY(event.descriptor.dateInterval.end)
+//                let floatIndex = Double(index)
+//                let x = style.leadingInset + floatIndex / totalCount * calendarWidth
+//                let equalWidth = calendarWidth / totalCount
+//                event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+//            }
+//            
+//            for (_, event) in timeOffFilteredEvents.enumerated() {
+//                let startY = dateToY(event.descriptor.dateInterval.start)
+//                let endY = dateToY(event.descriptor.dateInterval.end)
+//                let x = style.leadingInset
+//                let equalWidth = calendarWidth
+//                event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+//            }
+//        }
     }
 
     private func prepareEventViews() {
