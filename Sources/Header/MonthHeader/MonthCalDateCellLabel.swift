@@ -79,11 +79,24 @@ private extension MonthCalDateCellLabel {
             font = style.todayFont
             textColor = isToday ? style.todayActiveTextColor : style.activeTextColor
             backgroundColor = isToday ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
+           
+            if !isToday {
+                layer.borderColor = style.selectedBorderColor.cgColor
+                layer.borderWidth = 1
+            } else {
+                layer.borderColor = UIColor.clear.cgColor
+                layer.borderWidth = 0
+            }
         } else {
             let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
             font = style.font
             textColor = isToday ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
+            
+            layer.borderColor = UIColor.clear.cgColor
+            layer.borderWidth = 0
         }
+
+        addDotTag(showDot, color: isSelected ? style.selectedDotColor : style.dotColor)
     }
 }

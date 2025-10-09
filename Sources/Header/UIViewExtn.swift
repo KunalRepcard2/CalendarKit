@@ -22,7 +22,7 @@ extension UIView  {
         
         NSLayoutConstraint.activate([
             dotView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            dotView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2), // little below
+            dotView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5), // little below
             dotView.widthAnchor.constraint(equalToConstant: 4),
             dotView.heightAnchor.constraint(equalToConstant: 4)
         ])
