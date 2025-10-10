@@ -9,7 +9,7 @@ public protocol TimelineViewDelegate: AnyObject {
 
 public final class TimelineView: UIView {
     public weak var delegate: TimelineViewDelegate?
-
+    
     public var date = Date() {
         didSet {
             setNeedsLayout()
@@ -19,11 +19,11 @@ public final class TimelineView: UIView {
     private var currentTime: Date {
         Date()
     }
-
+    
+    private var maxEventCount: Int = 10
     private var eventViews = [EventView]()
     public private(set) var regularLayoutAttributes = [EventLayoutAttributes]()
     public private(set) var allDayLayoutAttributes = [EventLayoutAttributes]()
-
     public var layoutAttributes: [EventLayoutAttributes] {
         get {
             allDayLayoutAttributes + regularLayoutAttributes
@@ -487,10 +487,10 @@ public final class TimelineView: UIView {
             let groups = Array(groupedEvents.values)
             for (_, group) in groups.enumerated() {
                 let totalSameStartTimeCount = Double(group.count)
-                let isCountEvent = totalSameStartTimeCount > 5
-                let eventCount = !isCountEvent ? Double(totalSameStartTimeCount) : 6
+                let isCountEvent = totalSameStartTimeCount > Double(maxEventCount)
+                let eventCount = !isCountEvent ? Double(totalSameStartTimeCount) : Double(maxEventCount)+1
                 for (indexEvent, event) in group.enumerated() {
-                    if indexEvent < 5 {
+                    if indexEvent < maxEventCount {
                         let startY = dateToY(event.descriptor.dateInterval.start)
                         let endY = dateToY(event.descriptor.dateInterval.end)
                         let floatIndex = Double(indexEvent)
@@ -499,7 +499,7 @@ public final class TimelineView: UIView {
                         event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
                     } else {
                         counterEventLayout.append(event)
-                        if (group.count - 5) == (counterEventLayout.count) {
+                        if (group.count - maxEventCount) == (counterEventLayout.count) {
                             let startY = dateToY(event.descriptor.dateInterval.start)
                             let endY = dateToY(event.descriptor.dateInterval.end)
                             let floatIndex = Double(indexEvent - (counterEventLayout.count - 1))
