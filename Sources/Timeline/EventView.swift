@@ -134,10 +134,15 @@ open class EventView: UIView {
             } else {
                 stripedView.stripeColor = event.timeOffColor
             }
+        } else if event.isCounterEvent {
+            textLabel.text = "+\(event.appointmentIds.count)"
+            textLabel.textAlignment = .center
+            textLabel.textColor = .black
+            layer.backgroundColor = UIColor.clear.cgColor
+            verticalLine.backgroundColor = UIColor.clear
         } else {
             stripedView.removeFromSuperview()
         }
-        
         // Refresh layout once
         setNeedsLayout()
         setNeedsDisplay()
