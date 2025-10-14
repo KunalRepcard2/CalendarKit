@@ -13,6 +13,7 @@ public protocol EventDescriptor: AnyObject {
     var backgroundColor: UIColor {get}
     var editedEvent: EventDescriptor? {get set}
     var isTimeOff: Bool {get set}
+    var isCounterEvent: Bool {get set}
     var timeOffColor: UIColor {get set}
     var appointmentIds: [Int] {get set}
     func makeEditable() -> Self

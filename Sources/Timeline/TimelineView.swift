@@ -9,7 +9,7 @@ public protocol TimelineViewDelegate: AnyObject {
 
 public final class TimelineView: UIView {
     public weak var delegate: TimelineViewDelegate?
-
+    
     public var date = Date() {
         didSet {
             setNeedsLayout()
@@ -19,11 +19,11 @@ public final class TimelineView: UIView {
     private var currentTime: Date {
         Date()
     }
-
+    
+    private var maxEventCount: Int = 10
     private var eventViews = [EventView]()
     public private(set) var regularLayoutAttributes = [EventLayoutAttributes]()
     public private(set) var allDayLayoutAttributes = [EventLayoutAttributes]()
-
     public var layoutAttributes: [EventLayoutAttributes] {
         get {
             allDayLayoutAttributes + regularLayoutAttributes
@@ -433,7 +433,6 @@ public final class TimelineView: UIView {
     }
 
     private func recalculateEventLayout() {
-
         // only non allDay events need their frames to be set
         let sortedEvents = self.regularLayoutAttributes.sorted { (attr1, attr2) -> Bool in
             let start1 = attr1.descriptor.dateInterval.start
@@ -443,6 +442,7 @@ public final class TimelineView: UIView {
 
         var groupsOfEvents = [[EventLayoutAttributes]]()
         var overlappingEvents = [EventLayoutAttributes]()
+        var counterEventLayout: [EventLayoutAttributes] = []
 
         for event in sortedEvents {
             if overlappingEvents.isEmpty {
@@ -481,21 +481,41 @@ public final class TimelineView: UIView {
 
         groupsOfEvents.append(overlappingEvents)
         overlappingEvents.removeAll()
-
+        counterEventLayout.removeAll()
         for overlappingEvents in groupsOfEvents {
             let groupedEvents = Dictionary(grouping: overlappingEvents, by: { $0.descriptor.dateInterval.start })
             let groups = Array(groupedEvents.values)
             for (_, group) in groups.enumerated() {
                 let totalSameStartTimeCount = Double(group.count)
+                let isCountEvent = totalSameStartTimeCount > Double(maxEventCount)
+                let eventCount = !isCountEvent ? Double(totalSameStartTimeCount) : Double(maxEventCount)+1
                 for (indexEvent, event) in group.enumerated() {
-                    let startY = dateToY(event.descriptor.dateInterval.start)
-                    let endY = dateToY(event.descriptor.dateInterval.end)
-                    let floatIndex = Double(indexEvent)
-                    let x = style.leadingInset + floatIndex / totalSameStartTimeCount * calendarWidth
-                    let equalWidth = calendarWidth / totalSameStartTimeCount
-                    event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+                    if indexEvent < maxEventCount {
+                        let startY = dateToY(event.descriptor.dateInterval.start)
+                        let endY = dateToY(event.descriptor.dateInterval.end)
+                        let floatIndex = Double(indexEvent)
+                        let x = style.leadingInset + floatIndex / eventCount * calendarWidth
+                        let equalWidth = calendarWidth / eventCount
+                        event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+                    } else {
+                        counterEventLayout.append(event)
+                        if (group.count - maxEventCount) == (counterEventLayout.count) {
+                            let startY = dateToY(event.descriptor.dateInterval.start)
+                            let endY = dateToY(event.descriptor.dateInterval.end)
+                            let floatIndex = Double(indexEvent - (counterEventLayout.count - 1))
+                            let x = style.leadingInset + floatIndex / eventCount * calendarWidth
+                            let equalWidth = calendarWidth / eventCount
+                            event.descriptor.isCounterEvent = true
+                            counterEventLayout.forEach { e in
+                                event.descriptor.appointmentIds.append(e.descriptor.appointmentIds.first!)
+                            }
+                            event.descriptor.appointmentIds = Array(Set(event.descriptor.appointmentIds))
+                            event.frame = CGRect(x: x, y: startY, width: equalWidth, height: endY - startY)
+                        }
+                    }
                 }
             }
+            
         }
         
 //        for overlappingEvents in groupsOfEvents {
@@ -521,6 +541,7 @@ public final class TimelineView: UIView {
 //            }
 //        }
     }
+
 
     private func prepareEventViews() {
         pool.enqueue(views: eventViews)

@@ -4,6 +4,7 @@ public final class Event: EventDescriptor {
     public var appointmentIds: [Int] = []
     
     public var isTimeOff: Bool = false
+    public var isCounterEvent: Bool = false
     public var timeOffColor: UIColor = UIColor(hex: "#2E90FA14").withAlphaComponent(0.20)
     public var dateInterval = DateInterval()
     public var isAllDay = false
