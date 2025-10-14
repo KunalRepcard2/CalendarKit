@@ -29,20 +29,20 @@ public struct DayHeaderStyle {
 
 
 public struct DaySelectorStyle {
-    public var activeTextColor = UIColor.black // no change for other than today
+    public var activeTextColor = UIColor.white
     //SystemColors.systemBackground
-    public var selectedBackgroundColor = UIColor.clear
+    public var selectedBackgroundColor = UIColor(hex: "555555")
 
     public var weekendTextColor = SystemColors.secondaryLabel
     public var inactiveTextColor = SystemColors.label
     public var inactiveBackgroundColor = UIColor.clear
 
-    public var todayInactiveTextColor = SystemColors.systemRed
+    public var todayInactiveTextColor = UIColor(hex: "2E90FA")
     public var todayActiveTextColor = UIColor.white
     public var todayActiveBackgroundColor = UIColor(hex: "2E90FA")
     
     public var dotColor = UIColor(hex: "3F3F46")
-    public var selectedDotColor = UIColor(hex: "3F3F46")
+    public var selectedDotColor = UIColor(hex: "FFFFFF")
     public var todaySelectedDotColor = UIColor(hex: "FFFFFF")
 
     public var font = UIFont.systemFont(ofSize: 18)

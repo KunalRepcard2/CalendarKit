@@ -111,7 +111,7 @@ public final class DaySelector: CalHeaderDaySelecterView {
     func reloadDots() {
         items.forEach {
             $0.showDot = self.delegate?.daySelectorShouldShowDotOn(date: $0.date) ?? false
-            $0.reloadDot()
+//            $0.reloadDot()
         }
     }
     
@@ -155,8 +155,8 @@ public final class DaySelector: CalHeaderDaySelecterView {
     
     public func transitionToHorizontalSizeClass(_ sizeClass: UIUserInterfaceSizeClass) {
         switch sizeClass {
-        case .regular:
-            initializeViews(viewType: DayDateCell.self)
+//        case .regular:
+//            initializeViews(viewType: DayDateCell.self)
         default:
             initializeViews(viewType: DateLabel.self)
         }

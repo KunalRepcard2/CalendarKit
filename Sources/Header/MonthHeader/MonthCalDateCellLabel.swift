@@ -18,6 +18,7 @@ class MonthCalDateCellLabel: UILabel {
     
     private var isToday = false
     private var isWeekend = false
+    private var isPast = false
    
     var showDot: Bool = false {
         didSet {
@@ -42,7 +43,8 @@ class MonthCalDateCellLabel: UILabel {
     }
     
     override public func layoutSubviews() {
-        layer.cornerRadius = bounds.height / 2
+        layer.cornerRadius = 8
+        //bounds.height / 2
     }
     
     override public var intrinsicContentSize: CGSize {
@@ -69,6 +71,7 @@ private extension MonthCalDateCellLabel {
         let date = Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-MM-yyyy")
         isToday = date?.isToday ?? false
         isWeekend = date?.isAWeekend ?? false
+        isPast = date?.isPastDate ?? false
         isSelected = selected
         self.updateState()
     }
@@ -80,21 +83,21 @@ private extension MonthCalDateCellLabel {
             textColor = isToday ? style.todayActiveTextColor : style.activeTextColor
             backgroundColor = isToday ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
            
-            if !isToday {
-                layer.borderColor = style.selectedBorderColor.cgColor
-                layer.borderWidth = 1
-            } else {
-                layer.borderColor = UIColor.clear.cgColor
-                layer.borderWidth = 0
-            }
+//            if !isToday {
+//                layer.borderColor = style.selectedBorderColor.cgColor
+//                layer.borderWidth = 1
+//            } else {
+//                layer.borderColor = UIColor.clear.cgColor
+//                layer.borderWidth = 0
+//            }
         } else {
-            let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
+            let notTodayColor = isPast ? style.weekendTextColor : style.inactiveTextColor
             font = style.font
             textColor = isToday ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
             
-            layer.borderColor = UIColor.clear.cgColor
-            layer.borderWidth = 0
+//            layer.borderColor = UIColor.clear.cgColor
+//            layer.borderWidth = 0
         }
 
         addDotTag(showDot, color: isSelected ? style.selectedDotColor : style.dotColor)

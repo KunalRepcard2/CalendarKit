@@ -89,29 +89,24 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
-        let accpiedW = cellSize * 7
-        let gap = (frame.width -  accpiedW) / CGFloat(8) // counted 6 + start + end
-        
-        let max = daysInMonth + emptyDaysBeforeFirstDay
-        
+        let cellW = frame.width/7 // devide the width in 7 parts
             
-        let emptyXMargin = CGFloat(CGFloat(cellSize) + gap) * CGFloat(emptyDaysBeforeFirstDay)
-        var xx = emptyXMargin + gap
+        let emptyXMargin = cellW * CGFloat(emptyDaysBeforeFirstDay)
+        var xx = emptyXMargin
         var yy: CGFloat = 5.0
         let sz = CGSize(width: cellSize, height: cellSize)
         
-//        var weekIndx = emptyDaysBeforeFirstDay
         var inlineR = 1
         for indx in 0..<rows.count {
             let cellV = rows[indx]
-            
-            cellV.frame = CGRect(origin: CGPoint(x: xx, y: yy), size: sz)
-            xx += cellSize + gap
+            let xVal = xx + (cellW - cellSize) / 2.0 // add margin half of the gap
+            cellV.frame = CGRect(origin: CGPoint(x: xVal, y: yy), size: sz)
+            xx += cellW
             
             let weekIndx = indx + emptyDaysBeforeFirstDay + 1 // add gap from start
             
             if weekIndx > 0, (weekIndx) % 7 == 0 { // last row reset
-                xx = gap
+                xx = 0
                 yy += cellSize
                 inlineR += 1
             }

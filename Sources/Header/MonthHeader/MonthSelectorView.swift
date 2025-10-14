@@ -15,8 +15,8 @@ class MonthSelectorViewModel {
     func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
         let calendar = Calendar.current
-        let lastMonth: Date = calendar.date(byAdding: .month, value: -1, to: date) ?? date
-        for i in 0..<12 {
+        let lastMonth: Date = calendar.date(byAdding: .month, value: -3, to: date) ?? date
+        for i in 0..<15 {
             if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
                 let dtStr = nextMonth.stringWith(formate: MonthSelectorViewModel.storageFormate)
                 displayMonths.append(dtStr)

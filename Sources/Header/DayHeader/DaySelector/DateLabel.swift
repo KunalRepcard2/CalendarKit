@@ -1,7 +1,11 @@
 import UIKit
 
 public final class DateLabel: UILabel, DaySelectorItemProtocol {
-    public var showDot: Bool = false
+    public var showDot: Bool = false {
+        didSet {
+            reloadDot()
+        }
+    }
     
     public var calendar = Calendar.autoupdatingCurrent {
         didSet {
@@ -11,7 +15,7 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
 
     public var date = Date() {
         didSet {
-            text = String(calendar.dateComponents([.day], from: date).day!)
+//            text = String(calendar.dateComponents([.day], from: date).day!)
             updateState()
         }
     }
@@ -67,13 +71,13 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             textColor = today ? style.todayActiveTextColor : style.activeTextColor
             backgroundColor = today ? style.todayActiveBackgroundColor : style.selectedBackgroundColor
             
-            if !today {
-                layer.borderColor = style.selectedBorderColor.cgColor
-                layer.borderWidth = 1
-            } else {
-                layer.borderColor = UIColor.clear.cgColor
-                layer.borderWidth = 0
-            }
+//            if !today {
+//                layer.borderColor = style.selectedBorderColor.cgColor
+//                layer.borderWidth = 1
+//            } else {
+//                layer.borderColor = UIColor.clear.cgColor
+//                layer.borderWidth = 0
+//            }
             
         } else {
             let notTodayColor = date.isPastDate ? style.weekendTextColor : style.inactiveTextColor
@@ -82,8 +86,8 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             textColor = today ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
             
-            layer.borderColor = UIColor.clear.cgColor
-            layer.borderWidth = 0
+//            layer.borderColor = UIColor.clear.cgColor
+//            layer.borderWidth = 0
         }
         reloadDot()
     }
@@ -111,7 +115,8 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
     }
 
     override public func layoutSubviews() {
-        layer.cornerRadius = bounds.height / 2
+        layer.cornerRadius = 8
+        //bounds.height / 2
     }
     override public func tintColorDidChange() {
         updateState()

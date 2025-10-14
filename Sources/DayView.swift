@@ -25,7 +25,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
     public weak var delegate: DayViewDelegate?
         
-    var isMonthHeaderActive: Bool = false {
+    public var isMonthHeaderActive: Bool = false {
         didSet {
             self.monthHeaderView.isHidden = !isMonthHeaderActive
             self.dayHeaderView.isHidden = isMonthHeaderActive

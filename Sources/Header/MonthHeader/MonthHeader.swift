@@ -16,8 +16,7 @@ private extension MonthHeaderView {
 class MonthHeaderView: CalHeaderView {
     private var monthSelectorView: MonthSelectorView
     private let viewModel = MonthSelectorViewModel() // common view model in between Months list at bottom and this view
-    private var selectedDay = 5 // we may pass 1---31
-    
+   
     var totalHeight: Double {
         return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight + 15
     }
@@ -72,7 +71,6 @@ class MonthHeaderView: CalHeaderView {
     public override func reloadOnDateChange() {
         self.viewModel.calculateSelectedMonthIndex(date: selectedDate)
         self.monthSelectorView.updateSelectedMonth()
-        selectedDay = Calendar.current.component(.day, from: selectedDate)
         configurePagingViewController()
         reloadDotsOnPage()
     }
@@ -80,15 +78,21 @@ class MonthHeaderView: CalHeaderView {
     func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
         self.dateClickCompletion = block
     }
+    
+    private func selectedDayFor(index: Int) -> Int  {
+        guard index >= 0 && index < viewModel.displayMonths.count else { return 0 }
+        if viewModel.displayMonths[index] == selectedDate
+            .stringWith(formate: MonthSelectorViewModel.storageFormate) {
+            return Calendar.current.component(.day, from: selectedDate)
+        }
+        return 0
+    }
 }
 
 private extension MonthHeaderView {
-     func configure() {
+    func configure() {
         self.viewModel.prepareList(date: selectedDate)
-        selectedDay = Calendar.current.component(.day, from: selectedDate)
-
         monthSelectorView.viewModel = self.viewModel
-
         [daySymbolsView, monthSelectorView, separator].forEach(addSubview)
         backgroundColor = style.backgroundColor
         configurePagingViewController()
@@ -134,7 +138,7 @@ private extension MonthHeaderView {
         let monthSelController = MonthSelectorController()
         monthSelController.delegate = self
         monthSelController.pageIndex = index
-        monthSelController.selectedDateIndex = selectedDay
+        monthSelController.selectedDateIndex = selectedDayFor(index: index)
         monthSelController.monthRepresentDate = viewModel.dateAtIndex(index)
         return monthSelController
     }
