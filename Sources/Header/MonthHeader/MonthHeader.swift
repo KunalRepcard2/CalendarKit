@@ -200,6 +200,7 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
 extension MonthHeaderView : DaySelectorViewDelegate {
     public func dateSelectorDidSelectDate(_ date: Date) {
         print(date.stringWith(formate: "dd-MM-yyyy"))
+        self.selectedDate = date
         self.dateClickCompletion?(date)
     }
     

@@ -132,7 +132,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             let str = date.stringWith(formate: "dd-MM-yyyy")
             print("Header date selected\(str)")
             self.monthHeaderView.selectedDate = date
-            // expend here..
+//             expend here..
             self.isMonthHeaderActive = true
         }
         
@@ -142,7 +142,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
                 print("Month Header date selected\(str)")
                 self.dayHeaderView.selectedDate = aDate
             }
-            self.isMonthHeaderActive = false
+//            self.isMonthHeaderActive = false
         }
     }
     
