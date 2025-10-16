@@ -25,7 +25,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
     public weak var delegate: DayViewDelegate?
         
-    public var isMonthHeaderActive: Bool = false {
+    private var isMonthHeaderActive: Bool = false {
         didSet {
             self.monthHeaderView.isHidden = !isMonthHeaderActive
             self.dayHeaderView.isHidden = isMonthHeaderActive
@@ -41,6 +41,20 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             self.reloadDotsOnHeader()
         }
     }
+    
+    public func toggleHeaderExpansion() {
+        self.shouldExpandToMonth(!self.isMonthHeaderActive)
+    }
+    
+    public func shouldExpandToMonth(_ expand: Bool) {
+        if expand {
+            self.monthHeaderView.selectedDate = self.dayHeaderView.selectedDate
+        } else {
+            self.dayHeaderView.selectedDate = self.monthHeaderView.selectedDate
+        }
+        self.isMonthHeaderActive = expand
+    }
+    
     
     public var timelineScrollOffset: CGPoint {
         timelinePagerView.timelineScrollOffset
@@ -128,21 +142,14 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         self.dayHeaderView.headerDelegate = self
         self.monthHeaderView.headerDelegate = self
         
-        self.dayHeaderView.setDateClickCompletion { date in
-            let str = date.stringWith(formate: "dd-MM-yyyy")
-            print("Header date selected\(str)")
-            self.monthHeaderView.selectedDate = date
-//             expend here..
-            self.isMonthHeaderActive = true
+        self.dayHeaderView.setExpandCompletion { date in
+            self.shouldExpandToMonth(true)
         }
         
         self.monthHeaderView.setDateClickCompletion { date in
             if let aDate = date {
-                let str = aDate.stringWith(formate: "dd-MM-yyyy")
-                print("Month Header date selected\(str)")
                 self.dayHeaderView.selectedDate = aDate
             }
-//            self.isMonthHeaderActive = false
         }
     }
     

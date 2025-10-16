@@ -15,7 +15,7 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
         }
     }
 
-    var dateClickCompletion: ((Date) -> Void)?
+    var clickCompletion: ((Date) -> Void)?
     
     public private(set) var calendar = Calendar.autoupdatingCurrent
     public weak var state: DayViewState? {
@@ -73,7 +73,7 @@ public final class SwipeLabelView: UIView, DayViewStateUpdating {
             if #available(iOS 14.0, *) {
                 button.addAction(UIAction { _ in
                     print("Button tapped via UIAction\(self.state?.selectedDate.description ?? "")")
-                    self.dateClickCompletion?(self.state?.selectedDate ?? Date())
+                    self.clickCompletion?(self.state?.selectedDate ?? Date())
                 }, for: .touchUpInside)
             } else {
                 

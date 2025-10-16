@@ -23,7 +23,9 @@ public class CalHeaderView: UIView {
     var headerDelegate: CalHeaderViewDelegate?
     var selectedDate: Date = Date() {
         didSet {
-            reloadOnDateChange()
+            if oldValue != selectedDate {
+                reloadOnDateChange()
+            }
         }
     }
     

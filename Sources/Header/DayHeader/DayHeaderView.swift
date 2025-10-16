@@ -3,7 +3,7 @@ import UIKit
 private extension DayHeaderView {
     static let daySymbolsViewHeight: Double = 20
     static let pagingScrollViewHeight: Double = 45
-    static let swipeLabelViewHeight: Double = 20
+    static let swipeLabelViewHeight: Double = 0
     static let daysInWeek = 7
 }
 
@@ -48,12 +48,12 @@ public final class DayHeaderView: CalHeaderView {
         state?.move(to: selectedDate)
     }
     
-    func setDateClickCompletion(_ block: @escaping (Date) -> Void) {
-        self.swipeLabelView.dateClickCompletion = block
+    func setExpandCompletion(_ block: @escaping (Date) -> Void) {
+        self.swipeLabelView.clickCompletion = block
     }
     
     private func configure() {
-        [daySymbolsView, swipeLabelView, separator].forEach(addSubview)
+        [daySymbolsView, separator].forEach(addSubview) // swipeLabelView was added too
         backgroundColor = style.backgroundColor
         configurePagingViewController()
     }
@@ -204,6 +204,7 @@ extension DayHeaderView: UIPageViewControllerDataSource, UIPageViewControllerDel
 extension DayHeaderView : DaySelectorViewDelegate {
     public func dateSelectorDidSelectDate(_ date: Date) {
         state?.move(to: date)
+        self.selectedDate = date
     }
     
     public func daySelectorShouldShowDotOn(date: Date) -> Bool {
