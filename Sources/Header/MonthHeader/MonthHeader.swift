@@ -18,7 +18,7 @@ class MonthHeaderView: CalHeaderView {
     private let viewModel = MonthSelectorViewModel() // common view model in between Months list at bottom and this view
    
     var totalHeight: Double {
-        return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight + 15
+        return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight + 5
     }
     
     private var pagingScrollViewHeight: Double  = 205

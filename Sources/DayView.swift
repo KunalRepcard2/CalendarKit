@@ -32,8 +32,8 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             dayHieghtConstraint.constant = isMonthHeaderActive ? 0 : self.headerVisibleHeightD
             monthHieghtConstraint.constant = isMonthHeaderActive ? self.headerVisibleHeightM : 0
         
-            timelineTopToDay.isActive = !isMonthHeaderActive
-            timelineTopToMonth.isActive = isMonthHeaderActive
+            qFilterTopToDay.isActive = !isMonthHeaderActive
+            qFilterTopToMonth.isActive = isMonthHeaderActive
             
             UIView.animate(withDuration: 0.3) {
                 self.setNeedsLayout()
@@ -60,7 +60,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         timelinePagerView.timelineScrollOffset
     }
     
-    private let headerVisibleHeightD: Double = 115 // earlier 95
+    private let headerVisibleHeightD: Double = 80 // earlier 95
     private var headerVisibleHeightM: Double {
         return monthHeaderView.totalHeight
     }
@@ -78,6 +78,8 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
     public let dayHeaderView: DayHeaderView
     let monthHeaderView: MonthHeaderView
+    public let quickFilterView: QuickFilterView
+    
     public let timelinePagerView: TimelinePagerView
     
     public var state: DayViewState? {
@@ -105,6 +107,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         self.calendar = calendar
         self.dayHeaderView = DayHeaderView(calendar: calendar)
         self.monthHeaderView = MonthHeaderView(calendar: calendar)
+        self.quickFilterView = QuickFilterView()
         self.timelinePagerView = TimelinePagerView(calendar: calendar)
         super.init(frame: .zero)
         configure()
@@ -113,6 +116,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     override public init(frame: CGRect) {
         self.dayHeaderView = DayHeaderView(calendar: calendar)
         self.monthHeaderView = MonthHeaderView(calendar: calendar)
+        self.quickFilterView = QuickFilterView()
         self.timelinePagerView = TimelinePagerView(calendar: calendar)
         super.init(frame: frame)
         configure()
@@ -121,6 +125,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     required public init?(coder aDecoder: NSCoder) {
         self.dayHeaderView = DayHeaderView(calendar: calendar)
         self.monthHeaderView = MonthHeaderView(calendar: calendar)
+        self.quickFilterView = QuickFilterView()
         self.timelinePagerView = TimelinePagerView(calendar: calendar)
         super.init(coder: aDecoder)
         configure()
@@ -130,6 +135,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         addSubview(timelinePagerView)
         addSubview(dayHeaderView)
         addSubview(monthHeaderView)
+        addSubview(quickFilterView)
         configureLayout()
         monthHeaderView.isHidden = true
         timelinePagerView.delegate = self
@@ -156,12 +162,13 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     private var monthHieghtConstraint: NSLayoutConstraint!
     private var dayHieghtConstraint: NSLayoutConstraint!
 
-    private var timelineTopToDay: NSLayoutConstraint!
-    private var timelineTopToMonth: NSLayoutConstraint!
+    private var qFilterTopToDay: NSLayoutConstraint!
+    private var qFilterTopToMonth: NSLayoutConstraint!
     
     private func configureLayout() {
         dayHeaderView.translatesAutoresizingMaskIntoConstraints = false
         monthHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        quickFilterView.translatesAutoresizingMaskIntoConstraints = false
         timelinePagerView.translatesAutoresizingMaskIntoConstraints = false
 
         let dayH = isMonthHeaderActive ? 0 : self.headerVisibleHeightD
@@ -183,20 +190,26 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
 //        let bAnchor: NSLayoutYAxisAnchor = isMonthHeaderActive ? monthHeaderView.bottomAnchor : dayHeaderView.bottomAnchor
         
-        let tileLineH = isMonthHeaderActive ? self.headerVisibleHeightM : self.headerVisibleHeightD
+//        let tileLineH = isMonthHeaderActive ? self.headerVisibleHeightM : self.headerVisibleHeightD
 
+        quickFilterView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
+        quickFilterView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        quickFilterView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        timelinePagerView.topAnchor.constraint(equalTo: quickFilterView.bottomAnchor).isActive = true
+        timelinePagerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         timelinePagerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         timelinePagerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
-        timelinePagerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
         // Two possible top constraints
-        timelineTopToDay = timelinePagerView.topAnchor.constraint(equalTo: dayHeaderView.bottomAnchor)
-        timelineTopToMonth = timelinePagerView.topAnchor.constraint(equalTo: monthHeaderView.bottomAnchor)
+        qFilterTopToDay = quickFilterView.topAnchor.constraint(equalTo: dayHeaderView.bottomAnchor)
+        qFilterTopToMonth = quickFilterView.topAnchor.constraint(equalTo: monthHeaderView.bottomAnchor)
         
         // Activate the correct one initially
         if isMonthHeaderActive {
-            timelineTopToMonth.isActive = true
+            qFilterTopToMonth.isActive = true
         } else {
-            timelineTopToDay.isActive = true
+            qFilterTopToDay.isActive = true
         }
     }
     
@@ -292,6 +305,5 @@ extension DayView: CalHeaderViewDelegate {
                 self.setNeedsLayout()
             }
         }
-        
     }
 }
