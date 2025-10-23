@@ -1,9 +1,14 @@
 import Foundation
 
 struct TimeStringsFactory {
-    private let calendar: Calendar
+    private var calendar: Calendar = Calendar.current {
+        didSet {
+            calendar.timeZone = TimeZone.current
+            calendar.locale = Locale.current
+        }
+    }
 
-    init(_ calendar: Calendar = Calendar.autoupdatingCurrent) {
+    init(_ calendar: Calendar = Calendar.current) {
         self.calendar = calendar
     }
 
@@ -30,12 +35,12 @@ struct TimeStringsFactory {
             numbers.append(string)
         }
 
-        var am = numbers.map { $0 + " " + calendar.amSymbol}
-        var pm = numbers.map { $0 + " " + calendar.pmSymbol}
+        let am = numbers.map { $0 + " " + calendar.amSymbol}
+        let pm = numbers.map { $0 + " " + calendar.pmSymbol}
 
-        am.append(localizedString("12:00"))
-        pm.removeFirst()
-        pm.append(am.first!)
+//        am.append(localizedString("12:00"))
+//        pm.removeFirst()
+//        pm.append(am.first!)
         return am + pm
     }
 }

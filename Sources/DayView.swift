@@ -88,8 +88,13 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             timelinePagerView.state = state
         }
     }
-    
-    public var calendar: Calendar = Calendar.current
+        
+    public var calendar: Calendar = Calendar.current {
+        didSet {
+            calendar.timeZone = TimeZone.current
+            calendar.locale = Locale.current
+        }
+    }
     //autoupdatingCurrent
     
     public var eventEditingSnappingBehavior: EventEditingSnappingBehavior {
