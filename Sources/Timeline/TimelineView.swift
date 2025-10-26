@@ -56,7 +56,6 @@ public final class TimelineView: UIView {
             allDayView.events = allDayLayoutAttributes.map { $0.descriptor }
             allDayView.isHidden = allDayLayoutAttributes.count == 0
             allDayView.scrollToBottom()
-
             setNeedsLayout()
         }
     }
@@ -424,6 +423,8 @@ public final class TimelineView: UIView {
                                      height: attributes.frame.height - style.eventGap)
             eventView.updateWithDescriptor(event: descriptor)
         }
+        
+        bringViewToFront()
     }
 
     private func layoutAllDayEvents() {
@@ -527,8 +528,8 @@ public final class TimelineView: UIView {
                     }
                 }
             }
-            
         }
+
         
 //        for overlappingEvents in groupsOfEvents {
 //            let filteredEvents = overlappingEvents.filter { !$0.descriptor.isTimeOff }
@@ -572,6 +573,13 @@ public final class TimelineView: UIView {
                     }
                 }
             }
+        }
+    }
+    
+    func bringViewToFront() {
+        eventViews = eventViews.sorted { $0.descriptor?.dateInterval.duration ?? 0 < $1.descriptor?.dateInterval.duration ?? 0 }
+        eventViews.forEach { view in
+            bringSubviewToFront(view)
         }
     }
 
