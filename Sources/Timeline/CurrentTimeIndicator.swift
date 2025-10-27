@@ -1,166 +1,149 @@
 import UIKit
 
 @objc public final class CurrentTimeIndicator: UIView {
-    private let padding : Double = 3
-    private let leadingInset: Double = 53
-
-    public var calendar: Calendar = Calendar.autoupdatingCurrent {
-        didSet {
-            updateDate()
-        }
-    }
-
     private weak var timer: Timer?
-    @objc private func timerDidFire(_ sender: Timer) {
-        date = Date()
+
+    public var calendar: Calendar = .autoupdatingCurrent {
+        didSet { updateDate() }
     }
 
-    /// Determines if times should be displayed in a 24 hour format. Defaults to the current locale's setting
-    public var is24hClock : Bool = true {
-        didSet {
-            updateDate()
-        }
+    public var is24hClock: Bool = true {
+        didSet { updateDate() }
     }
 
     public var date = Date() {
-        didSet {
-            updateDate()
-        }
+        didSet { updateDate() }
     }
 
-    private var timeLabel = UILabel()
-    private var circle = UIView()
-    private var line = UIView()
-
+    private let timeLabel = UILabel()
+    private let leftLine = UIView()
+    private let rightLine = UIView()
     private var style = CurrentTimeIndicatorStyle()
 
     private lazy var dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = calendar.locale
-        dateFormatter.timeZone = calendar.timeZone
-        return dateFormatter
+        let df = DateFormatter()
+        df.locale = calendar.locale
+        df.timeZone = calendar.timeZone
+        return df
     }()
 
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         configure()
     }
 
+    // MARK: - Configure UI
     private func configure() {
-        [timeLabel, circle, line].forEach {
-            addSubview($0)
-        }
+        addSubview(leftLine)
+        addSubview(timeLabel)
+        addSubview(rightLine)
 
-        //Allow label to adjust so that am/pm can be displayed if format is changed.
-        timeLabel.numberOfLines = 1
-        timeLabel.textAlignment = .right
-        timeLabel.adjustsFontSizeToFitWidth = true
-        timeLabel.minimumScaleFactor = 0.5
-
-        //The width of the label is determined by leftInset and padding.
-        //The y position is determined by the line's middle.
+        leftLine.translatesAutoresizingMaskIntoConstraints = false
+        rightLine.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.widthAnchor.constraint(equalToConstant: leadingInset - (3 * padding)).isActive = true
-        timeLabel.trailingAnchor.constraint(equalTo: line.leadingAnchor, constant: -padding).isActive = true
-        timeLabel.centerYAnchor.constraint(equalTo: line.centerYAnchor).isActive = true
-        timeLabel.baselineAdjustment = .alignCenters
+
+        NSLayoutConstraint.activate([
+            // Label centered in view
+            //timeLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            timeLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            timeLabel.leadingAnchor.constraint(equalTo: leftLine.trailingAnchor, constant: 8),
+            timeLabel.trailingAnchor.constraint(equalTo: rightLine.leadingAnchor, constant: -8),
+           
+
+            // Line height
+            leftLine.heightAnchor.constraint(equalToConstant: 1),
+            rightLine.heightAnchor.constraint(equalToConstant: 1),
+
+            // Lines aligned to label vertically
+            leftLine.centerYAnchor.constraint(equalTo: timeLabel.centerYAnchor),
+            rightLine.centerYAnchor.constraint(equalTo: timeLabel.centerYAnchor),
+
+            // Spacing between lines and label
+            //leftLine.trailingAnchor.constraint(equalTo: timeLabel.leadingAnchor, constant: -8),
+            //rightLine.leadingAnchor.constraint(equalTo: timeLabel.trailingAnchor, constant: 8),
+
+            // Lines anchored to edges
+            leftLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            rightLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50),
+
+            // ⚖️ Equal width for perfect centering
+            leftLine.widthAnchor.constraint(equalTo: rightLine.widthAnchor)
+        ])
+
+        // Label setup
+        timeLabel.textAlignment = .center
+        timeLabel.adjustsFontSizeToFitWidth = true
+        timeLabel.minimumScaleFactor = 0.8
 
         updateStyle(style)
         configureTimer()
         isUserInteractionEnabled = false
     }
 
+    // MARK: - Timer
     private func configureTimer() {
         invalidateTimer()
         let date = Date()
-        var components = calendar.dateComponents(Set([.era, .year, .month, .day, .hour, .minute]), from: date)
+        var components = calendar.dateComponents([.era, .year, .month, .day, .hour, .minute], from: date)
         components.minute! += 1
-        let timerDate = calendar.date(from: components)!
-        let newTimer = Timer(fireAt: timerDate,
+        guard let nextMinute = calendar.date(from: components) else { return }
+
+        let newTimer = Timer(fireAt: nextMinute,
                              interval: 60,
                              target: self,
                              selector: #selector(timerDidFire(_:)),
                              userInfo: nil,
                              repeats: true)
+
         RunLoop.current.add(newTimer, forMode: .common)
         timer = newTimer
     }
 
     private func invalidateTimer() {
         timer?.invalidate()
+        timer = nil
     }
-    
+
+    @objc private func timerDidFire(_ sender: Timer) {
+        date = Date()
+    }
+
+    // MARK: - Date Formatting
     private func updateDate() {
         dateFormatter.dateFormat = is24hClock ? "HH:mm" : "h:mm a"
         dateFormatter.calendar = calendar
         dateFormatter.timeZone = calendar.timeZone
         timeLabel.text = dateFormatter.string(from: date)
-        timeLabel.sizeToFit()
-        setNeedsLayout()
         configureTimer()
     }
 
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        line.frame = {
-
-            let x: Double
-            let rightToLeft = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
-            if rightToLeft {
-                x = 0
-            } else {
-                x = leadingInset - padding
-            }
-
-            return CGRect(x: x, y: bounds.height / 2, width: bounds.width - leadingInset, height: 1)
-        }()
-
-        circle.frame = {
-
-            let x: Double
-            if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {
-                x = bounds.width - leadingInset - 10
-            } else {
-                x = leadingInset + 1
-            }
-
-            return CGRect(x: x, y: 0, width: 6, height: 6)
-        }()
-        circle.center.y = line.center.y
-        circle.layer.cornerRadius = circle.bounds.height / 2
-    }
-
+    // MARK: - Style
     func updateStyle(_ newStyle: CurrentTimeIndicatorStyle) {
         style = newStyle
         timeLabel.textColor = style.color
         timeLabel.font = style.font
-        circle.backgroundColor = style.color
-        line.backgroundColor = style.color
+        leftLine.backgroundColor = style.color
+        rightLine.backgroundColor = style.color
 
         switch style.dateStyle {
         case .twelveHour:
             is24hClock = false
-            break
         case .twentyFourHour:
             is24hClock = true
-            break
         default:
             is24hClock = Locale.autoupdatingCurrent.uses24hClock
-            break
         }
     }
 
+    // MARK: - Superview
     public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
-        if newSuperview != nil {
-            configureTimer()
-        } else {
-            invalidateTimer()
-        }
+        newSuperview != nil ? configureTimer() : invalidateTimer()
     }
 }

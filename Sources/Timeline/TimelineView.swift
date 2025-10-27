@@ -10,8 +10,17 @@ public protocol TimelineViewDelegate: AnyObject {
 public final class TimelineView: UIView {
     public weak var delegate: TimelineViewDelegate?
     
+//    public var date = Date() {
+//        didSet {
+//            setNeedsLayout()
+//        }
+//    }
+    
     public var date = Date() {
         didSet {
+            date = Calendar.current.date(byAdding: .second,
+                                         value: TimeZone.current.secondsFromGMT(),
+                                         to: date) ?? date
             setNeedsLayout()
         }
     }
@@ -47,7 +56,6 @@ public final class TimelineView: UIView {
             allDayView.events = allDayLayoutAttributes.map { $0.descriptor }
             allDayView.isHidden = allDayLayoutAttributes.count == 0
             allDayView.scrollToBottom()
-
             setNeedsLayout()
         }
     }
@@ -100,9 +108,12 @@ public final class TimelineView: UIView {
         }
     }
 
-    public var calendar: Calendar = Calendar.autoupdatingCurrent {
+    public var calendar: Calendar = Calendar.current {
         didSet {
+            calendar.timeZone = TimeZone.current
+            calendar.locale = Locale.current
             eventEditingSnappingBehavior.calendar = calendar
+            nowLine.backgroundColor = .clear
             nowLine.calendar = calendar
             regenerateTimeStrings()
             setNeedsLayout()
@@ -324,7 +335,7 @@ public final class TimelineView: UIView {
             context?.strokePath()
             context?.restoreGState()
 
-            if hour == hourToRemoveIndex { continue }
+            //if hour == hourToRemoveIndex { continue }
 
             let fontSize = style.font.pointSize
             let timeRect: CGRect = {
@@ -384,7 +395,7 @@ public final class TimelineView: UIView {
             bringSubviewToFront(nowLine)
             nowLine.alpha = 1
             let size = CGSize(width: bounds.size.width, height: 20)
-            let rect = CGRect(origin: CGPoint.zero, size: size)
+            let rect = CGRect(origin: CGPoint(x: 50, y: 0), size: size)
             nowLine.date = currentTime
             nowLine.frame = rect
             nowLine.center.y = dateToY(currentTime)
@@ -412,6 +423,8 @@ public final class TimelineView: UIView {
                                      height: attributes.frame.height - style.eventGap)
             eventView.updateWithDescriptor(event: descriptor)
         }
+        
+        bringViewToFront()
     }
 
     private func layoutAllDayEvents() {
@@ -515,8 +528,8 @@ public final class TimelineView: UIView {
                     }
                 }
             }
-            
         }
+
         
 //        for overlappingEvents in groupsOfEvents {
 //            let filteredEvents = overlappingEvents.filter { !$0.descriptor.isTimeOff }
@@ -560,6 +573,13 @@ public final class TimelineView: UIView {
                     }
                 }
             }
+        }
+    }
+    
+    func bringViewToFront() {
+        eventViews = eventViews.sorted { $0.descriptor?.dateInterval.duration ?? 0 < $1.descriptor?.dateInterval.duration ?? 0 }
+        eventViews.forEach { view in
+            bringSubviewToFront(view)
         }
     }
 

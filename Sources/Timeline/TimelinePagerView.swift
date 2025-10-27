@@ -19,9 +19,17 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
     public weak var dataSource: EventDataSource?
     public weak var delegate: TimelinePagerViewDelegate?
 
-    public private(set) var calendar: Calendar = Calendar.autoupdatingCurrent
+    public private(set) var calendar: Calendar = Calendar.current {
+        didSet {
+            calendar.timeZone = .current
+            calendar.locale = .current
+        }
+    }
+    
     public var eventEditingSnappingBehavior: EventEditingSnappingBehavior {
         didSet {
+            calendar.timeZone = .current
+            calendar.locale = .current
             updateEventEditingSnappingBehavior()
         }
     }
@@ -521,5 +529,24 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
 
     public func timelineView(_ timelineView: TimelineView, didLongPress event: EventView) {
         delegate?.timelinePagerDidLongPressEventView(event)
+    }
+    
+    private func getFormattedDateFromUTC(from date: Date?) -> Date {
+        if let date {
+            let utcFormatter = DateFormatter()
+            utcFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            utcFormatter.timeZone = TimeZone(abbreviation: "UTC")
+            let dateString = utcFormatter.string(from: date)
+            if let outputDate = utcFormatter.date(from: dateString) {
+                let localFormatter = DateFormatter()
+                localFormatter.dateFormat = "MMM d, yyyy h:mm a"
+                localFormatter.locale = Locale.current
+                localFormatter.timeZone = TimeZone.current
+                let localDateStr = localFormatter.string(from: outputDate)
+                return localFormatter.date(from: localDateStr) ?? Date()
+            }
+            return Date()
+        }
+        return Date()
     }
 }

@@ -12,6 +12,8 @@ public final class DayViewState {
     public init(date: Date = Date(), calendar: Calendar = Calendar.autoupdatingCurrent) {
         let date = date.dateOnly(calendar: calendar)
         self.calendar = calendar
+        self.calendar.timeZone = TimeZone.current
+        self.calendar.locale = Locale.current
         self.selectedDate = date
     }
 
