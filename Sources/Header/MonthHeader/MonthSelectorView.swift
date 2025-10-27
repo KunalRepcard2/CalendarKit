@@ -11,12 +11,13 @@ class MonthSelectorViewModel {
     private(set) var displayMonths = [String]()
     static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
     var selectedMonthIndex: Int = -1
+    private let totlaMonths: Int = 60 // <-12 to + 48>
     
     func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
         let calendar = Calendar.current
-        let lastMonth: Date = calendar.date(byAdding: .month, value: -3, to: date) ?? date
-        for i in 0..<55 {
+        let lastMonth: Date = calendar.date(byAdding: .month, value: -12, to: date) ?? date
+        for i in 0..<totlaMonths {
             if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
                 let dtStr = nextMonth.stringWith(formate: MonthSelectorViewModel.storageFormate)
                 displayMonths.append(dtStr)
