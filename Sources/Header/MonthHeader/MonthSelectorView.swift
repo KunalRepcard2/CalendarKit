@@ -16,7 +16,7 @@ class MonthSelectorViewModel {
         displayMonths.removeAll()
         let calendar = Calendar.current
         let lastMonth: Date = calendar.date(byAdding: .month, value: -3, to: date) ?? date
-        for i in 0..<15 {
+        for i in 0..<55 {
             if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
                 let dtStr = nextMonth.stringWith(formate: MonthSelectorViewModel.storageFormate)
                 displayMonths.append(dtStr)

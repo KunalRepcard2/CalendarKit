@@ -79,6 +79,7 @@ public final class DayHeaderView: CalHeaderView {
         daySelectorController.updateStyle(style.daySelector)
         daySelectorController.startDate = startDate
         daySelectorController.delegate = self
+        daySelectorController.reloadDots()
         return daySelectorController
     }
     

@@ -42,6 +42,10 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         }
     }
     
+    public var isExpendedHeader: Bool {
+        self.isMonthHeaderActive
+    }
+    
     public func toggleHeaderExpansion() {
         self.shouldExpandToMonth(!self.isMonthHeaderActive)
     }
