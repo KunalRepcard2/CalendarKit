@@ -25,6 +25,7 @@ public final class Event: EventDescriptor {
             updateColors()
         }
     }
+    public var isUnassigned: Bool = false
     
     public init() {}
     

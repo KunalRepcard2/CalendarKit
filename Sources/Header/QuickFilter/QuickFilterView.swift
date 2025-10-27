@@ -37,6 +37,16 @@ public final class QuickFilterView: UIView {
         super.init(coder: coder)
         setupView()
     }
+    
+    public func updateCounts(_ numbers: [Int]) {
+        let allFilters = FilterType.allCases
+        for button in buttons {
+            if allFilters.count > button.tag, numbers.count > button.tag {
+                let filter = FilterType.allCases[button.tag]
+                button.setTitle(filter.titleWith(count: numbers[button.tag]), for: .normal)
+            }
+        }
+    }
 
     private func setupView() {
         backgroundColor = .clear
@@ -58,7 +68,7 @@ public final class QuickFilterView: UIView {
         // Create buttons
         for (index, filter) in FilterType.allCases.enumerated() {
             let button = UIButton(type: .system)
-            button.setTitle(filter.titleWith(count: 8), for: .normal)
+            button.setTitle(filter.titleWith(count: 0), for: .normal)
             button.setTitleColor(.black, for: .normal)
             button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .medium)
             button.layer.cornerRadius = 12
