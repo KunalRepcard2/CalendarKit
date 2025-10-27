@@ -35,6 +35,10 @@ public final class TimelineContainer: UIScrollView {
         let padding = allDayViewHeight + 8
         if let yToScroll = timeline.firstEventYPosition {
             setTimelineOffset(CGPoint(x: contentOffset.x, y: yToScroll - padding), animated: animated)
+        } else {
+            if let yToNowLineScroll = timeline.nowLineYPosition {
+                setTimelineOffset(CGPoint(x: contentOffset.x, y: yToNowLineScroll - padding), animated: animated)
+            }
         }
     }
     
