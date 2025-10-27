@@ -68,6 +68,12 @@ public final class TimelineView: UIView {
         let beginningOfDayPosition = dateToY(date)
         return max(firstEventPosition, beginningOfDayPosition)
     }
+    
+    public var nowLineYPosition: Double? {
+        let firstEventPosition = nowLine.frame.origin.y
+        let beginningOfDayPosition = dateToY(date)
+        return max(firstEventPosition, beginningOfDayPosition)
+    }
 
     private lazy var nowLine: CurrentTimeIndicator = CurrentTimeIndicator()
 
