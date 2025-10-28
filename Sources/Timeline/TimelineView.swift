@@ -10,17 +10,8 @@ public protocol TimelineViewDelegate: AnyObject {
 public final class TimelineView: UIView {
     public weak var delegate: TimelineViewDelegate?
     
-//    public var date = Date() {
-//        didSet {
-//            setNeedsLayout()
-//        }
-//    }
-    
     public var date = Date() {
         didSet {
-            date = Calendar.current.date(byAdding: .second,
-                                         value: TimeZone.current.secondsFromGMT(),
-                                         to: date) ?? date
             setNeedsLayout()
         }
     }

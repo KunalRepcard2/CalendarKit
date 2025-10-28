@@ -18,6 +18,7 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
 
     public weak var dataSource: EventDataSource?
     public weak var delegate: TimelinePagerViewDelegate?
+    private var currentDate: Date = Date()
 
     public private(set) var calendar: Calendar = Calendar.current {
         didSet {
@@ -103,12 +104,43 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
 
     private func configure() {
         let viewController = configureTimelineController(date: Date())
+        currentDate = viewController.timeline.date
         pagingViewController.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
-        pagingViewController.dataSource = self
-        pagingViewController.delegate = self
+        // Add swipe gestures manually
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeLeft.direction = .left
+        pagingViewController.view.addGestureRecognizer(swipeLeft)
+        
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeRight.direction = .right
+        pagingViewController.view.addGestureRecognizer(swipeRight)
+//        pagingViewController.dataSource = self
+//        pagingViewController.delegate = self
         addSubview(pagingViewController.view!)
         addGestureRecognizer(panGestureRecognizer)
         panGestureRecognizer.delegate = self
+    }
+    
+    // MARK: - Swipe handler
+    @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        switch gesture.direction {
+        case .left:
+            // Next day
+            if let nextDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) {
+                //move(from: currentDate, to: nextDate)
+                self.delegate?.timelinePager(timelinePager: self, didMoveTo: nextDate)
+                currentDate = nextDate
+            }
+        case .right:
+            // Previous day
+            if let previousDate = Calendar.current.date(byAdding: .day, value: -1, to: currentDate) {
+                //move(from: currentDate, to: previousDate)
+                self.delegate?.timelinePager(timelinePager: self, didMoveTo: previousDate)
+                currentDate = previousDate
+            }
+        default:
+            break
+        }
     }
 
     public func updateStyle(_ newStyle: TimelineStyle) {
@@ -430,8 +462,8 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
     }
 
     // MARK: DayViewStateUpdating
-
     public func move(from oldDate: Date, to newDate: Date) {
+        currentDate = newDate
         let oldDate = oldDate.dateOnly(calendar: calendar)
         let newDate = newDate.dateOnly(calendar: calendar)
         let newController = configureTimelineController(date: newDate)
