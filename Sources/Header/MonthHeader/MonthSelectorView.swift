@@ -11,13 +11,14 @@ class MonthSelectorViewModel {
     private(set) var displayMonths = [String]()
     static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
     var selectedMonthIndex: Int = -1
-    private let totlaMonths: Int = 60 // <-12 to + 48>
+    private let totalMonths: Int = 72 // <-12 to + 48>
+    private let startMonth: Int = -24
     
     func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
         let calendar = Calendar.current
-        let lastMonth: Date = calendar.date(byAdding: .month, value: -12, to: date) ?? date
-        for i in 0..<totlaMonths {
+        let lastMonth: Date = calendar.date(byAdding: .month, value: startMonth, to: date) ?? date
+        for i in 0..<totalMonths {
             if let nextMonth = calendar.date(byAdding: .month, value: i, to: lastMonth) {
                 let dtStr = nextMonth.stringWith(formate: MonthSelectorViewModel.storageFormate)
                 displayMonths.append(dtStr)
@@ -45,10 +46,12 @@ class MonthSelectorViewModel {
     }
 }
 
+// MARK: - MonthSelectorView
 class MonthSelectorView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private var monthButtons: [MonthButton] = []
+    private var yearsLabels: [UILabel] = []
     
     var viewModel = MonthSelectorViewModel() {
         didSet {
@@ -107,7 +110,32 @@ class MonthSelectorView: UIView {
         monthButtons.forEach{$0.removeFromSuperview()}
         monthButtons.removeAll()
         
+        yearsLabels.forEach{$0.removeFromSuperview()}
+        yearsLabels.removeAll()
+        
+        var lastYear = viewModel.displayMonths[0].components(separatedBy: "-").last ?? ""
+        
         for (index, dtStr) in viewModel.displayMonths.enumerated() {
+            // check and add Year.
+            let anYear = dtStr.components(separatedBy: "-").last ?? ""
+            if anYear != "", anYear != lastYear {
+                let yrLabel = UILabel()
+                yrLabel.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+                yrLabel.textColor = UIColor(hex: "3F3F46")
+                yrLabel.textAlignment = .center
+                yrLabel.text = anYear
+                yearsLabels.append(yrLabel)
+                
+                yrLabel.translatesAutoresizingMaskIntoConstraints = false
+                yrLabel.setContentHuggingPriority(.required, for: .horizontal)
+                yrLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: buttonSize.width).isActive = true
+                yrLabel.heightAnchor.constraint(equalToConstant: buttonSize.height).isActive = true
+                stackView.addArrangedSubview(yrLabel)
+                
+                lastYear = anYear
+            }
+            
+            
             let monthView = MonthButton()
             monthView.configureMonth(dtStr)
             monthView.tag = index
@@ -122,6 +150,7 @@ class MonthSelectorView: UIView {
             monthView.widthAnchor.constraint(greaterThanOrEqualToConstant: buttonSize.width).isActive = true
             monthView.heightAnchor.constraint(equalToConstant: buttonSize.height).isActive = true
 
+            
             monthButtons.append(monthView)
             stackView.addArrangedSubview(monthView)
             
@@ -147,28 +176,22 @@ class MonthSelectorView: UIView {
 }
 
 
+
+// MARK: - MonthButton
 class MonthButton : UIView {
     private let monthLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        label.textColor = UIColor(hex: "#3F3F46")
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let yearLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 8, weight: .regular)
-        label.textColor = UIColor(hex: "#3F3F46")
+        label.textColor = UIColor(hex: "3F3F46")
         label.textAlignment = .center
         return label
     }()
     
     var isSelected: Bool = false {
         didSet {
-            monthLabel.textColor = isSelected ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#3F3F46")
-            yearLabel.textColor = isSelected ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#3F3F46")
-            self.backgroundColor = isSelected ? UIColor(hex: "#2E90FA") : .clear
+            monthLabel.textColor = isSelected ? UIColor(hex: "FFFFFF") : UIColor(hex: "3F3F46")
+            self.backgroundColor = isSelected ? UIColor(hex: "2E90FA") : .clear
+            self.layer.borderColor = isSelected ? UIColor(hex: "2E90FA").cgColor : UIColor(hex: "D0D5DD").cgColor
         }
     }
     
@@ -186,20 +209,11 @@ class MonthButton : UIView {
     
     private func setupView() {
         addSubview(monthLabel)
-        addSubview(yearLabel)
-        
         monthLabel.translatesAutoresizingMaskIntoConstraints = false
-        yearLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            monthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            monthLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             monthLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            
-            yearLabel.topAnchor.constraint(equalTo: monthLabel.bottomAnchor, constant: 2),
-            yearLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
-//            yearLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-//            yearLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
         ])
         
         // Make clickable
@@ -210,13 +224,12 @@ class MonthButton : UIView {
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
         self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor(hex: "#D0D5DD").cgColor
+        self.layer.borderColor = UIColor(hex: "D0D5DD").cgColor
     }
     
     func configureMonth(_ month: String) {
         let arr = month.components(separatedBy: "-")
         monthLabel.text = arr.first
-        yearLabel.text = arr.last
     }
     
     @objc private func handleTap() {
