@@ -33,13 +33,13 @@ public final class TimelineContainer: UIScrollView {
     public func scrollToFirstEvent(animated: Bool) {
         let allDayViewHeight = timeline.allDayViewHeight
         let padding = allDayViewHeight + 8
-        if let yToScroll = timeline.firstEventYPosition {
-            setTimelineOffset(CGPoint(x: contentOffset.x, y: yToScroll - padding), animated: animated)
-        } else {
-            if let yToNowLineScroll = timeline.nowLineYPosition {
-                setTimelineOffset(CGPoint(x: contentOffset.x, y: yToNowLineScroll - padding), animated: animated)
-            }
+        
+        if let yToNowLineScroll = timeline.nowLineYPosition {
+            setTimelineOffset(CGPoint(x: contentOffset.x, y: yToNowLineScroll - padding), animated: animated)
         }
+//        if let yToScroll = timeline.firstEventYPosition {
+//            setTimelineOffset(CGPoint(x: contentOffset.x, y: yToScroll - padding), animated: animated)
+//        }
     }
     
     public func scrollTo(hour24: Float, animated: Bool = true) {
