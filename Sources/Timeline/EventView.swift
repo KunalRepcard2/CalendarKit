@@ -39,6 +39,8 @@ open class EventView: UIView {
         view.isUserInteractionEnabled = false
         view.backgroundColor = .clear
         view.clipsToBounds = true
+        view.textAlignment = .left
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -66,6 +68,12 @@ open class EventView: UIView {
         //            handle.tag = idx
         //            addSubview(handle)
         //        }
+        NSLayoutConstraint.activate([
+               textLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+               textLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+               textLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+               textLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
+           ])
     }
     
     public func updateWithDescriptor(event: EventDescriptor) {
@@ -136,7 +144,6 @@ open class EventView: UIView {
             }
         } else if event.isCounterEvent {
             textLabel.text = "+\(event.appointmentIds.count)"
-            textLabel.textAlignment = .center
             textLabel.textColor = .black
             layer.backgroundColor = UIColor.clear.cgColor
             verticalLine.backgroundColor = UIColor.clear
