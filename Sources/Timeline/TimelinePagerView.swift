@@ -235,6 +235,7 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
         let end = calendar.date(byAdding: .day, value: 1, to: date)!
         let day = DateInterval(start: date, end: end)
         let validEvents = events.filter{$0.dateInterval.intersects(day)}
+        timeline.layoutAttributes.removeAll()
         timeline.layoutAttributes = validEvents.map(EventLayoutAttributes.init)
     }
 
