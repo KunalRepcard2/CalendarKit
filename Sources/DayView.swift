@@ -14,6 +14,8 @@ public protocol DayViewDelegate: AnyObject {
 }
 
 public class DayView: UIView, TimelinePagerViewDelegate {
+    public var shouldDispQuickFilter : Bool = true
+    
     public weak var dataSource: EventDataSource? {
         get {
             timelinePagerView.dataSource
@@ -112,12 +114,13 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
     private var style = CalendarStyle()
     
-    public init(calendar: Calendar = Calendar.autoupdatingCurrent) {
+    public init(calendar: Calendar = Calendar.autoupdatingCurrent, dispQuickFilter: Bool = true) {
         self.calendar = calendar
         self.dayHeaderView = DayHeaderView(calendar: calendar)
         self.monthHeaderView = MonthHeaderView(calendar: calendar)
         self.quickFilterView = QuickFilterView()
         self.timelinePagerView = TimelinePagerView(calendar: calendar)
+        self.shouldDispQuickFilter = dispQuickFilter
         super.init(frame: .zero)
         configure()
     }
@@ -145,6 +148,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         addSubview(dayHeaderView)
         addSubview(monthHeaderView)
         addSubview(quickFilterView)
+        quickFilterView.isHidden = !shouldDispQuickFilter
         configureLayout()
         monthHeaderView.isHidden = true
         timelinePagerView.delegate = self
@@ -203,7 +207,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
 
         quickFilterView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         quickFilterView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
-        quickFilterView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        quickFilterView.heightAnchor.constraint(equalToConstant: shouldDispQuickFilter ? 50 : 0).isActive = true
         
         timelinePagerView.topAnchor.constraint(equalTo: quickFilterView.bottomAnchor).isActive = true
         timelinePagerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true

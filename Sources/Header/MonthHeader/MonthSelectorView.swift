@@ -7,14 +7,14 @@
 import UIKit
 
 // only for month boxes
-class MonthSelectorViewModel {
-    private(set) var displayMonths = [String]()
-    static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
-    var selectedMonthIndex: Int = -1
+public class MonthSelectorViewModel {
+    public private(set) var displayMonths = [String]()
+    public static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
+    public var selectedMonthIndex: Int = -1
     private let totalMonths: Int = 72 // <-12 to + 48>
     private let startMonth: Int = -24
     
-    func prepareList(date: Date = Date()) {
+    public func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
         let calendar = Calendar.current
         let lastMonth: Date = calendar.date(byAdding: .month, value: startMonth, to: date) ?? date
@@ -26,7 +26,7 @@ class MonthSelectorViewModel {
         }
     }
      
-    func calculateSelectedMonthIndex(date: Date) {
+    public func calculateSelectedMonthIndex(date: Date) {
         let calendar = Calendar.current
         guard let aDt = calendar.date(byAdding: .month, value: 0, to: date) else {
             selectedMonthIndex = -1
@@ -39,7 +39,7 @@ class MonthSelectorViewModel {
         selectedMonthIndex = indx
     }
     
-    func dateAtIndex(_ index: Int) -> Date {
+    public func dateAtIndex(_ index: Int) -> Date {
         guard index >= 0 && index < displayMonths.count else { return Date() }
         return Date.dateFrom(string: displayMonths[index],
                              formate: MonthSelectorViewModel.storageFormate) ?? Date()
@@ -47,13 +47,13 @@ class MonthSelectorViewModel {
 }
 
 // MARK: - MonthSelectorView
-class MonthSelectorView: UIView {
+public class MonthSelectorView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private var monthButtons: [MonthButton] = []
     private var yearsLabels: [UILabel] = []
     
-    var viewModel = MonthSelectorViewModel() {
+    public var viewModel = MonthSelectorViewModel() {
         didSet {
             self.addMonthsButtons()
         }
@@ -61,24 +61,27 @@ class MonthSelectorView: UIView {
     
     private let buttonSize: CGSize = CGSize(width: 65, height: 40)
     
-    func updateSelectedMonth() {
+    public func updateSelectedMonth() {
         self.updateSelection()
         self.scrollToMonth(at: viewModel.selectedMonthIndex)
     }
     
-    var onChangeOfMonth: ((_ index: Int) -> Void)? // 1-month-year
+    public var onChangeOfMonth: ((_ index: Int) -> Void)? // 1-month-year
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupView()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         self.setupView()
     }
     
-    private func setupView() {
+}
+
+private extension MonthSelectorView {
+    func setupView() {
         // ScrollView setup
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +109,7 @@ class MonthSelectorView: UIView {
         ])
     }
     
-    private func addMonthsButtons() {
+    func addMonthsButtons() {
         monthButtons.forEach{$0.removeFromSuperview()}
         monthButtons.removeAll()
         
@@ -121,7 +124,7 @@ class MonthSelectorView: UIView {
             if anYear != "", anYear != lastYear {
                 let yrLabel = UILabel()
                 yrLabel.font = UIFont.systemFont(ofSize: 18, weight: .regular)
-                yrLabel.textColor = UIColor(hex: "3F3F46")
+                yrLabel.textColor = UIColor(hex: "2E90FA")
                 yrLabel.textAlignment = .center
                 yrLabel.text = anYear
                 yearsLabels.append(yrLabel)
@@ -168,7 +171,7 @@ class MonthSelectorView: UIView {
         scrollView.scrollRectToVisible(targetFrame.insetBy(dx: -16, dy: 0), animated: animated)
     }
     
-    private func updateSelection() {
+    func updateSelection() {
         for (index, monthBtn) in monthButtons.enumerated() {
             monthBtn.isSelected = index == viewModel.selectedMonthIndex
         }
@@ -178,7 +181,7 @@ class MonthSelectorView: UIView {
 
 
 // MARK: - MonthButton
-class MonthButton : UIView {
+public class MonthButton : UIView {
     private let monthLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
@@ -187,7 +190,7 @@ class MonthButton : UIView {
         return label
     }()
     
-    var isSelected: Bool = false {
+    public var isSelected: Bool = false {
         didSet {
             monthLabel.textColor = isSelected ? UIColor(hex: "FFFFFF") : UIColor(hex: "3F3F46")
             self.backgroundColor = isSelected ? UIColor(hex: "2E90FA") : .clear
@@ -195,14 +198,14 @@ class MonthButton : UIView {
         }
     }
     
-    var onMonthButtonTap: (() -> Void)?
+    public var onMonthButtonTap: (() -> Void)?
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
     }
@@ -227,7 +230,7 @@ class MonthButton : UIView {
         self.layer.borderColor = UIColor(hex: "D0D5DD").cgColor
     }
     
-    func configureMonth(_ month: String) {
+    public func configureMonth(_ month: String) {
         let arr = month.components(separatedBy: "-")
         monthLabel.text = arr.first
     }

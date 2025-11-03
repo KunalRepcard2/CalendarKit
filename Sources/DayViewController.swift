@@ -2,6 +2,8 @@ import UIKit
 
 open class DayViewController: UIViewController, EventDataSource, DayViewDelegate {
     public lazy var dayView: DayView = DayView()
+    public var shouldDispQuickFilter: Bool = true
+    
     public var dataSource: EventDataSource? {
         get {
             dayView.dataSource
