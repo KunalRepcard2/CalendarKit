@@ -26,6 +26,7 @@ public final class Event: EventDescriptor {
         }
     }
     public var isUnassigned: Bool = false
+    public var isMyAppointment: Bool = false
     
     public init() {}
     

@@ -17,6 +17,7 @@ public protocol EventDescriptor: AnyObject {
     var timeOffColor: UIColor {get set}
     var appointmentIds: [Int] {get set}
     var isUnassigned: Bool {get set}
+    var isMyAppointment : Bool {get set}
     func makeEditable() -> Self
     func commitEditing()
 }
