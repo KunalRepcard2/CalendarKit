@@ -45,8 +45,8 @@ public struct DaySelectorStyle {
     public var selectedDotColor = UIColor(hex: "FFFFFF")
     public var todaySelectedDotColor = UIColor(hex: "FFFFFF")
 
-    public var font = UIFont.systemFont(ofSize: 18)
-    public var todayFont = UIFont.boldSystemFont(ofSize: 18)
+    public var font = UIFont.systemFont(ofSize: 13)
+    public var todayFont = UIFont.boldSystemFont(ofSize: 13)
     
     public var selectedBorderColor = UIColor(hex: "#2E90FA")
 
@@ -54,9 +54,9 @@ public struct DaySelectorStyle {
 }
 
 public struct DaySymbolsStyle {
-    public var weekendColor = SystemColors.secondaryLabel
-    public var weekDayColor = SystemColors.label
-    public var font = UIFont.systemFont(ofSize: 10)
+    public var weekendColor = UIColor(hex: "A0A0AB")
+    public var weekDayColor = UIColor(hex: "3F3F46")
+    public var font = UIFont.systemFont(ofSize: 13)
     public init() {}
 }
 

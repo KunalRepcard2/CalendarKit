@@ -91,7 +91,7 @@ private extension MonthCalDateCellLabel {
 //                layer.borderWidth = 0
 //            }
         } else {
-            let notTodayColor = isPast ? style.weekendTextColor : style.inactiveTextColor
+            let notTodayColor = isWeekend ? style.weekendTextColor : style.inactiveTextColor
             font = style.font
             textColor = isToday ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor

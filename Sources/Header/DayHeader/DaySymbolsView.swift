@@ -50,8 +50,7 @@ public final class DaySymbolsView: UIView {
         
         for (index, label) in labels.enumerated() {
             label.text = weekDays[index].0
-            label.textColor = style.weekDayColor
-            //weekDays[index].1 ? style.weekendColor : style.weekDayColor
+            label.textColor = weekDays[index].1 ? style.weekendColor : style.weekDayColor
             label.font = style.font
         }
     }
