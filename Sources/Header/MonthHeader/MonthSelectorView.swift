@@ -51,7 +51,7 @@ public class MonthSelectorView: UIView {
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
     private var monthButtons: [MonthButton] = []
-    private var yearsLabels: [UILabel] = []
+    private var yearsLabels: [YearLabel] = []
     
     public var viewModel = MonthSelectorViewModel() {
         didSet {
@@ -122,11 +122,8 @@ private extension MonthSelectorView {
             // check and add Year.
             let anYear = dtStr.components(separatedBy: "-").last ?? ""
             if anYear != "", anYear != lastYear {
-                let yrLabel = UILabel()
-                yrLabel.font = UIFont.systemFont(ofSize: 18, weight: .regular)
-                yrLabel.textColor = UIColor(hex: "2E90FA")
-                yrLabel.textAlignment = .center
-                yrLabel.text = anYear
+                let yrLabel = YearLabel()
+                yrLabel.configure(year: anYear)
                 yearsLabels.append(yrLabel)
                 
                 yrLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -246,3 +243,79 @@ public class MonthButton : UIView {
         }
     }
 }
+
+
+// MARK: - YearLabel
+public class YearLabel: UIView {
+    
+    private let yrLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        label.textColor = UIColor(hex: "2E90FA")
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let leftLine: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "E4E4E7")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let rightLine: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "E4E4E7")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
+    private func setupView() {
+        backgroundColor = .clear
+        
+        addSubview(leftLine)
+        addSubview(rightLine)
+        addSubview(yrLabel)
+        
+        NSLayoutConstraint.activate([
+            // Center label
+            yrLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            yrLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            yrLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 8),
+            yrLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
+            
+            // Left vertical line
+            leftLine.leadingAnchor.constraint(equalTo: leadingAnchor),
+            leftLine.centerYAnchor.constraint(equalTo: centerYAnchor),
+            leftLine.widthAnchor.constraint(equalToConstant: 1),
+            leftLine.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
+            
+            // Right vertical line
+            rightLine.trailingAnchor.constraint(equalTo: trailingAnchor),
+            rightLine.centerYAnchor.constraint(equalTo: centerYAnchor),
+            rightLine.widthAnchor.constraint(equalToConstant: 1),
+            rightLine.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6)
+        ])
+    }
+    
+    public func configure(year: String) {
+        yrLabel.text = year
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        let labelSize = yrLabel.intrinsicContentSize
+        return CGSize(width: labelSize.width + 24, height: labelSize.height + 8)
+    }
+}
+
