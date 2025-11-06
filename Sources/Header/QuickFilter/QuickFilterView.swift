@@ -22,7 +22,7 @@ public final class QuickFilterView: UIView {
     }
 
     private var buttons: [UIButton] = []
-    public var selectedFilter: FilterType = .all {
+    public var selectedFilter: FilterType = .mine {
         didSet { updateSelection() }
     }
     
