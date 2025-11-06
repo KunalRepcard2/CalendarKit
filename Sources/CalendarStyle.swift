@@ -31,7 +31,7 @@ public struct DayHeaderStyle {
 public struct DaySelectorStyle {
     public var activeTextColor = UIColor.white
     //SystemColors.systemBackground
-    public var selectedBackgroundColor = UIColor(hex: "555555")
+    public var selectedBackgroundColor = UIColor(hex: "18181B")
 
     public var weekendTextColor = SystemColors.secondaryLabel
     public var inactiveTextColor = SystemColors.label
@@ -48,7 +48,7 @@ public struct DaySelectorStyle {
     public var font = UIFont.systemFont(ofSize: 13)
     public var todayFont = UIFont.boldSystemFont(ofSize: 13)
     
-    public var selectedBorderColor = UIColor(hex: "#2E90FA")
+    public var selectedBorderColor = UIColor(hex: "2E90FA")
 
     public init() {}
 }
