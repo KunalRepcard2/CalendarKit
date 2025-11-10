@@ -12,7 +12,7 @@ public class MonthSelectorViewModel {
     public static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
     public var selectedMonthIndex: Int = -1
     private let totalMonths: Int = 72 // <-12 to + 48>
-    private let startMonth: Int = -24
+    private let startMonth: Int = -3
     
     public func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
