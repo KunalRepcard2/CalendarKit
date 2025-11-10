@@ -12,11 +12,19 @@ public final class QuickFilterView: UIView {
     public enum FilterType: Int, CaseIterable {
         case all, mine, unassigned
         
+        var title: String {
+            switch self {
+            case .all: return "All"
+            case .mine: return "My"
+            case .unassigned: return "Unassigned"
+            }
+        }
+        
         func titleWith(count: Int) -> String {
             switch self {
-            case .all: return "All Appts(\(count))"
-            case .mine: return "My Appts(\(count))"
-            case .unassigned: return "Unassigned(\(count))"
+            case .all: return "\(title)(\(count))"
+            case .mine: return "\(title)(\(count))"
+            case .unassigned: return "\(title)(\(count))"
             }
         }
     }
@@ -44,6 +52,16 @@ public final class QuickFilterView: UIView {
             if allFilters.count > button.tag, numbers.count > button.tag {
                 let filter = FilterType.allCases[button.tag]
                 button.setTitle(filter.titleWith(count: numbers[button.tag]), for: .normal)
+            }
+        }
+    }
+    
+    public func displayTitleWithoutCount() {
+        let allFilters = FilterType.allCases
+        for button in buttons {
+            if allFilters.count > button.tag {
+                let filter = FilterType.allCases[button.tag]
+                button.setTitle(filter.title, for: .normal)
             }
         }
     }
