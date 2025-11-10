@@ -14,9 +14,17 @@ public final class QuickFilterView: UIView {
         
         var title: String {
             switch self {
-            case .all: return "All"
-            case .mine: return "My"
+            case .all: return "All Appts"
+            case .mine: return "My Appts"
             case .unassigned: return "Unassigned"
+            }
+        }
+        
+        public var paramString: String {
+            switch self {
+            case .all: return "ALL_APPOINTMENTS"
+            case .mine: return "MY_APPOINTMENTS"
+            case .unassigned: return "ASSIGN_CLOSER"
             }
         }
         

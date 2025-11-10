@@ -83,11 +83,11 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
         }
     }
 
-    public init(calendar: Calendar) {
+    public init(calendar: Calendar, date: Date = Date()) {
         self.calendar = calendar
         self.eventEditingSnappingBehavior = SnapTo15MinuteIntervals(calendar)
         super.init(frame: .zero)
-        configure()
+        configure(date: date)
     }
 
     override public init(frame: CGRect) {
@@ -102,8 +102,8 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
         configure()
     }
 
-    private func configure() {
-        let viewController = configureTimelineController(date: Date())
+    private func configure(date: Date = Date()) {
+        let viewController = configureTimelineController(date: date)
         currentDate = viewController.timeline.date
         pagingViewController.setViewControllers([viewController], direction: .forward, animated: false, completion: nil)
         // Add swipe gestures manually

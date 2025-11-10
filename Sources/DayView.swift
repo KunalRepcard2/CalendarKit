@@ -114,15 +114,17 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     
     private var style = CalendarStyle()
     
-    public init(calendar: Calendar = Calendar.autoupdatingCurrent, dispQuickFilter: Bool = true) {
+    public init(calendar: Calendar = Calendar.autoupdatingCurrent,
+                dispQuickFilter: Bool = true,
+                selectedDate: Date = Date()) {
         self.calendar = calendar
         self.dayHeaderView = DayHeaderView(calendar: calendar)
         self.monthHeaderView = MonthHeaderView(calendar: calendar)
         self.quickFilterView = QuickFilterView()
-        self.timelinePagerView = TimelinePagerView(calendar: calendar)
+        self.timelinePagerView = TimelinePagerView(calendar: calendar, date: selectedDate)
         self.shouldDispQuickFilter = dispQuickFilter
         super.init(frame: .zero)
-        configure()
+        configure(date: selectedDate)
     }
     
     override public init(frame: CGRect) {
@@ -143,7 +145,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         configure()
     }
         
-    private func configure() {
+    private func configure(date: Date = Date()) {
         addSubview(timelinePagerView)
         addSubview(dayHeaderView)
         addSubview(monthHeaderView)
@@ -154,10 +156,13 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         timelinePagerView.delegate = self
         
         if state == nil {
-            let newState = DayViewState(date: Date(), calendar: calendar)
-            newState.move(to: Date())
+            let newState = DayViewState(date: date, calendar: calendar)
+            newState.move(to: date)
             state = newState
         }
+        self.dayHeaderView.selectedDate = date
+        self.monthHeaderView.selectedDate = date
+        
         self.dayHeaderView.headerDelegate = self
         self.monthHeaderView.headerDelegate = self
         
