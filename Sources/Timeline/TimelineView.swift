@@ -20,7 +20,7 @@ public final class TimelineView: UIView {
         Date()
     }
     
-    private var maxEventCount: Int = 10
+    private var maxEventCount: Int = 5
     private var eventViews = [EventView]()
     public private(set) var regularLayoutAttributes = [EventLayoutAttributes]()
     public private(set) var allDayLayoutAttributes = [EventLayoutAttributes]()
