@@ -41,6 +41,10 @@ public class DayView: UIView, TimelinePagerViewDelegate {
                 self.setNeedsLayout()
             }
             self.reloadDotsOnHeader()
+            if isMonthHeaderActive {
+                self.monthHeaderView.willApearing()
+            }
+            
         }
     }
     

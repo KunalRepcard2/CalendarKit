@@ -11,8 +11,8 @@ public class MonthSelectorViewModel {
     public private(set) var displayMonths = [String]()
     public static let storageFormate = "MMM-yyyy" // e.g. Jan, Feb, Mar
     public var selectedMonthIndex: Int = -1
-    private let totalMonths: Int = 72 // <-12 to + 48>
-    private let startMonth: Int = -3
+    private let totalMonths: Int = 96 // <-12 to + 48> 75
+    private let startMonth: Int = -24
     
     public func prepareList(date: Date = Date()) {
         displayMonths.removeAll()
@@ -63,7 +63,7 @@ public class MonthSelectorView: UIView {
     
     public func updateSelectedMonth() {
         self.updateSelection()
-        self.scrollToMonth(at: viewModel.selectedMonthIndex)
+        self.scrollToSelectedMonth()
     }
     
     public var onChangeOfMonth: ((_ index: Int) -> Void)? // 1-month-year
@@ -78,6 +78,9 @@ public class MonthSelectorView: UIView {
         self.setupView()
     }
     
+    public func scrollToSelectedMonth() {
+        self.scrollToMonth(at: viewModel.selectedMonthIndex)
+    }
 }
 
 private extension MonthSelectorView {
@@ -158,7 +161,10 @@ private extension MonthSelectorView {
         }
     }
     
-    func scrollToMonth(at index: Int, animated: Bool = true) {
+    
+   
+    
+    private func scrollToMonth(at index: Int, animated: Bool = true) {
         guard index >= 0, index < monthButtons.count else { return }
         
         let targetView = monthButtons[index]

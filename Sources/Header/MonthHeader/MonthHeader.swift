@@ -79,6 +79,10 @@ class MonthHeaderView: CalHeaderView {
         self.dateClickCompletion = block
     }
     
+    func willApearing() {
+        self.monthSelectorView.scrollToSelectedMonth()
+    }
+    
     private func selectedDayFor(index: Int) -> Int  {
         guard index >= 0 && index < viewModel.displayMonths.count else { return 0 }
         if viewModel.displayMonths[index] == selectedDate
