@@ -13,11 +13,11 @@ private extension MonthHeaderView {
     static let monthSelectorViewHeight: Double = 60
 }
 
-class MonthHeaderView: CalHeaderView {
+public class MonthHeaderView: CalHeaderView {
     private var monthSelectorView: MonthSelectorView
     private let viewModel = MonthSelectorViewModel() // common view model in between Months list at bottom and this view
    
-    var totalHeight: Double {
+    public var totalHeight: Double {
         return 5 + MonthHeaderView.daySymbolsViewHeight + 5 + pagingScrollViewHeight + 5 + MonthHeaderView.monthSelectorViewHeight + 5
     }
     
@@ -30,7 +30,7 @@ class MonthHeaderView: CalHeaderView {
         return separator
     }()
     
-    override init(calendar: Calendar) {
+    override public init(calendar: Calendar) {
         monthSelectorView = MonthSelectorView()
         super.init(calendar: calendar)
         configure()
@@ -75,11 +75,11 @@ class MonthHeaderView: CalHeaderView {
         reloadDotsOnPage()
     }
     
-    func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
+    public func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
         self.dateClickCompletion = block
     }
     
-    func willApearing() {
+    public func willApearing() {
         self.monthSelectorView.scrollToSelectedMonth()
     }
     
@@ -188,7 +188,7 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
         (pendingViewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(style.daySelector)}
     }
 
-    func pageViewController(_ pageViewController: UIPageViewController,
+    public func pageViewController(_ pageViewController: UIPageViewController,
                             didFinishAnimating finished: Bool,
                             previousViewControllers: [UIViewController],
                             transitionCompleted completed: Bool) {

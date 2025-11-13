@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol CalHeaderViewDelegate: AnyObject {
+public protocol CalHeaderViewDelegate: AnyObject {
     func shouldShowDotOn(date: Date) -> Bool
     // called to notify it's parent when any hieght is changed
     // [Mostly happened once number of rows in Month view changed due to the change of days in months and their positions]
@@ -20,8 +20,8 @@ public class CalHeaderView: UIView {
     let daySymbolsView: DaySymbolsView
     private(set) var style = DayHeaderStyle()
   
-    var headerDelegate: CalHeaderViewDelegate?
-    var selectedDate: Date = Date() {
+    public var headerDelegate: CalHeaderViewDelegate?
+    public var selectedDate: Date = Date() {
         didSet {
             if oldValue != selectedDate {
                 reloadOnDateChange()

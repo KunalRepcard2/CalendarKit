@@ -316,11 +316,11 @@ public class DayView: UIView, TimelinePagerViewDelegate {
 
 
 extension DayView: CalHeaderViewDelegate {
-    func shouldShowDotOn(date: Date) -> Bool {
+    public func shouldShowDotOn(date: Date) -> Bool {
         return delegate?.dayView(shouldShowDotAt: date) ?? false
     }
     
-    func refreshOnHeightChange() { // no change in Weekly header
+    public func refreshOnHeightChange() { // no change in Weekly header
         if isMonthHeaderActive {
             monthHieghtConstraint.constant = self.headerVisibleHeightM
             UIView.animate(withDuration: 0.3) {
