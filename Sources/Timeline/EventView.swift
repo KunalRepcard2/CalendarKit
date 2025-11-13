@@ -143,7 +143,9 @@ open class EventView: UIView {
                 stripedView.stripeColor = event.timeOffColor
             }
         } else if event.isCounterEvent {
-            textLabel.text = "+\(event.appointmentIds.count)"
+            textLabel.text = "+\(event.appointmentIds.count) "
+            textLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            textLabel.textAlignment = .center
             textLabel.textColor = .black
             layer.backgroundColor = UIColor.clear.cgColor
             verticalLine.backgroundColor = UIColor.clear
