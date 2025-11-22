@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MonthDaySelectorView: CalHeaderDaySelecterView {
+public class MonthDaySelectorView: CalHeaderDaySelecterView {
     private var rows : [MonthCalDateCellLabel] = []
     private(set) var month = 1
     private(set) var year = 2025
@@ -35,7 +35,7 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
         self.initializeViews()
     }
     
-    init() {
+    public init() {
         super.init(frame: .zero)
         backgroundColor = .white
     }
@@ -52,23 +52,26 @@ class MonthDaySelectorView: CalHeaderDaySelecterView {
     public func updateStyle(_ newStyle: DaySelectorStyle) {
         style = newStyle
         rows.filter({$0.isSelected}).forEach{$0.updateStyle(style)}
-//        rows.forEach{$0.updateStyle(style)} // we can implement only selected items
     }
     
     private func dateWith(day: Int) -> Date? {
        return Date.dateFrom(string: "\(day)-\(month)-\(year)", formate: "dd-MM-yyyy")
     }
     
-    @objc private func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
+    @objc public func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
         if let cell = sender.view as? MonthCalDateCellLabel,
           let aDate = dateWith(day: cell.dayNumber) {
             self.delegate?.dateSelectorDidSelectDate(aDate)
         }
     }
     
+    public func manualDateTap(aDate: Date) {
+        self.delegate?.dateSelectorDidSelectDate(aDate)
+    }
+    
     private func initializeViews() {
         // Remove previous Items
-        rows.forEach{$0.removeFromSuperview()}
+        rows.forEach { $0.removeFromSuperview() }
         rows.removeAll()
         
         // Create new with corresponding class

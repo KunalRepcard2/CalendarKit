@@ -38,7 +38,6 @@ public class MonthHeaderView: CalHeaderView {
     
     public override func updateStyle(_ newStyle: DayHeaderStyle) {
         super.updateStyle(newStyle)
-//        (pagingViewController.viewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(newStyle.daySelector)}
         backgroundColor = style.backgroundColor
         separator.backgroundColor = style.separatorColor
     }
@@ -101,7 +100,7 @@ private extension MonthHeaderView {
         backgroundColor = style.backgroundColor
         configurePagingViewController()
         monthSelectorView.onChangeOfMonth = { [weak self] index in
-            // scrol to selected month..
+            // scroll to selected month..
             self?.goToPage(index: index)
         }
     }
@@ -179,7 +178,7 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
               selector.pageIndex < self.viewModel.displayMonths.count - 1 else {
             return nil
         }
-            
+        
         let indx = selector.pageIndex + 1
         return viewControllerAt(index: indx) // next
     }
@@ -197,6 +196,18 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
         self.viewModel.selectedMonthIndex = currentVC.pageIndex
         self.monthSelectorView.updateSelectedMonth()
         self.updateHeightAsPerRow()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            print("currentVC.pageIndex ----- > \(currentVC.pageIndex)")
+            let monthRepresentDate = currentVC.monthRepresentDate.stringWith(formate: "yyyy-MM")
+            if monthRepresentDate != Date().stringWith(formate: "yyyy-MM") {
+                let firstDate = monthRepresentDate + "-01"
+                if let dt = Date.dateFrom(string: firstDate, formate: "yyyy-MM-dd") {
+                    currentVC.monthDaySelector.manualDateTap(aDate: dt)
+                }
+            } else {
+                currentVC.monthDaySelector.manualDateTap(aDate: Date())
+            }
+        }
     }
 }
 

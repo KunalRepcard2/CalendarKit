@@ -8,7 +8,7 @@
 import UIKit
 
 public final class MonthSelectorController: UIViewController {
-    private(set) lazy var monthDaySelector = MonthDaySelectorView()
+    lazy var monthDaySelector = MonthDaySelectorView()
         
     var pageIndex = 0
     
