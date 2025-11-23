@@ -69,7 +69,7 @@ import UIKit
             //rightLine.leadingAnchor.constraint(equalTo: timeLabel.trailingAnchor, constant: 8),
 
             // Lines anchored to edges
-            leftLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            leftLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
             rightLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50),
 
             // ⚖️ Equal width for perfect centering
