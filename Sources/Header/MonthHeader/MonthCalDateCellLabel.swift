@@ -96,8 +96,8 @@ private extension MonthCalDateCellLabel {
             textColor = isToday ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
             
-//            layer.borderColor = UIColor.clear.cgColor
-//            layer.borderWidth = 0
+            layer.borderColor = isToday ? style.todayInactiveBorderColor : notTodayColor.cgColor
+            layer.borderWidth = isToday ? 1.5 : 0
         }
 
         addDotTag(showDot, color: isSelected ? style.selectedDotColor : style.dotColor)

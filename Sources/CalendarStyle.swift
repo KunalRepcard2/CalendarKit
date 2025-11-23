@@ -37,9 +37,11 @@ public struct DaySelectorStyle {
     public var inactiveTextColor = SystemColors.label
     public var inactiveBackgroundColor = UIColor.clear
 
-    public var todayInactiveTextColor = UIColor(hex: "2E90FA")
+    public var todayInactiveTextColor = UIColor(hex: "18181B")
     public var todayActiveTextColor = UIColor.white
     public var todayActiveBackgroundColor = UIColor(hex: "2E90FA")
+    
+    public var todayInactiveBorderColor = UIColor(hex: "2E90FA").cgColor
     
     public var dotColor = UIColor(hex: "3F3F46")
     public var selectedDotColor = UIColor(hex: "FFFFFF")
