@@ -221,7 +221,7 @@ public class DayView: UIView, TimelinePagerViewDelegate {
 
         quickFilterView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         quickFilterView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
-        quickFilterView.heightAnchor.constraint(equalToConstant: shouldDispQuickFilter ? 50 : 0).isActive = true
+        quickFilterView.heightAnchor.constraint(equalToConstant: shouldDispQuickFilter ? 46 : 0).isActive = true
         
         timelinePagerView.topAnchor.constraint(equalTo: quickFilterView.bottomAnchor).isActive = true
         timelinePagerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true

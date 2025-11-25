@@ -86,8 +86,8 @@ public final class DateLabel: UILabel, DaySelectorItemProtocol {
             textColor = today ? style.todayInactiveTextColor : notTodayColor
             backgroundColor = style.inactiveBackgroundColor
             
-//            layer.borderColor = UIColor.clear.cgColor
-//            layer.borderWidth = 0
+            layer.borderColor = isToday ? style.todayInactiveBorderColor : notTodayColor.cgColor
+            layer.borderWidth = isToday ? 1.5 : 0
         }
         reloadDot()
     }
