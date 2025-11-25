@@ -305,13 +305,13 @@ public class YearLabel: UIView {
             leftLine.leadingAnchor.constraint(equalTo: leadingAnchor),
             leftLine.centerYAnchor.constraint(equalTo: centerYAnchor),
             leftLine.widthAnchor.constraint(equalToConstant: 1),
-            leftLine.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
+            leftLine.heightAnchor.constraint(equalTo: heightAnchor),
             
             // Right vertical line
             rightLine.trailingAnchor.constraint(equalTo: trailingAnchor),
             rightLine.centerYAnchor.constraint(equalTo: centerYAnchor),
             rightLine.widthAnchor.constraint(equalToConstant: 1),
-            rightLine.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6)
+            rightLine.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
     
