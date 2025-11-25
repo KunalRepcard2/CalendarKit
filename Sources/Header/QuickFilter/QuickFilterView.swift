@@ -94,12 +94,13 @@ public final class QuickFilterView: UIView {
         // Create buttons
         for (index, filter) in FilterType.allCases.enumerated() {
             let button = UIButton(type: .system)
+            button.heightAnchor.constraint(equalToConstant: 30).isActive = true
             button.setTitle(filter.titleWith(count: 0), for: .normal)
             button.setTitleColor(.black, for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-            button.layer.cornerRadius = 12
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+            button.layer.cornerRadius = 8
             button.layer.borderWidth = 1
-            button.layer.borderColor = UIColor.gray.cgColor
+            button.layer.borderColor = UIColor(hex: "#E4E4E7").cgColor
             button.tag = index
             button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
             stack.addArrangedSubview(button)
@@ -113,12 +114,14 @@ public final class QuickFilterView: UIView {
         for (index, button) in buttons.enumerated() {
             let filter = FilterType(rawValue: index)!
             if filter == selectedFilter {
-                button.setTitleColor(.systemBlue, for: .normal)
-                button.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.08)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+                button.setTitleColor(UIColor(hex: "2E90FA"), for: .normal)
+                button.backgroundColor = UIColor(hex: "2E90FA1A").withAlphaComponent(0.2)
                 button.layer.borderWidth = 0
                 button.layer.borderColor = UIColor.clear.cgColor
             } else {
-                button.setTitleColor(.black, for: .normal)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+                button.setTitleColor(UIColor(hex: "26272B"), for: .normal)
                 button.backgroundColor = .clear
                 button.layer.borderWidth = 1
                 button.layer.borderColor = UIColor(hex: "E4E4E7").cgColor
