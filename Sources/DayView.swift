@@ -271,6 +271,10 @@ public class DayView: UIView, TimelinePagerViewDelegate {
         state?.move(to: date)
     }
     
+    public func moveMonthHeader(to date: Date) {
+        monthHeaderView.move(from: date, to: date)
+    }
+    
     public func transitionToHorizontalSizeClass(_ sizeClass: UIUserInterfaceSizeClass) {
         dayHeaderView.transitionToHorizontalSizeClass(sizeClass)
         updateStyle(style)

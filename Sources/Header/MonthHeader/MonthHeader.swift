@@ -113,10 +113,10 @@ private extension MonthHeaderView {
         if let visibleVC = self.pagingViewController.viewControllers?.first as? MonthSelectorController {
             direction = visibleVC.pageIndex > index ? .reverse : .forward
         }
-        
         pagingViewController.setViewControllers([vc], direction: direction, animated: animated) { completed in
             if completed {
                 self.updateHeightAsPerRow()
+                self.handleMonthChangeDateSelection(currentVC: vc)
             }
         }
     }
@@ -196,8 +196,11 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
         self.viewModel.selectedMonthIndex = currentVC.pageIndex
         self.monthSelectorView.updateSelectedMonth()
         self.updateHeightAsPerRow()
+        handleMonthChangeDateSelection(currentVC: currentVC)
+    }
+    
+    private func handleMonthChangeDateSelection(currentVC: MonthSelectorController) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            print("currentVC.pageIndex ----- > \(currentVC.pageIndex)")
             let monthRepresentDate = currentVC.monthRepresentDate.stringWith(formate: "yyyy-MM")
             if monthRepresentDate != Date().stringWith(formate: "yyyy-MM") {
                 let firstDate = monthRepresentDate + "-01"
@@ -214,7 +217,6 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
 // MARK: DaySelectorViewDelegate
 extension MonthHeaderView : DaySelectorViewDelegate {
     public func dateSelectorDidSelectDate(_ date: Date) {
-        print(date.stringWith(formate: "dd-MM-yyyy"))
         self.selectedDate = date
         self.dateClickCompletion?(date)
     }
@@ -228,6 +230,15 @@ extension MonthHeaderView : DaySelectorViewDelegate {
 // MARK: DayViewStateUpdating
 extension MonthHeaderView: DayViewStateUpdating {
     public func move(from oldDate: Date, to newDate: Date) {
+        var idx: Int? = nil
+        let displayMonths = self.viewModel.displayMonths
+        let newDateMonth = newDate.stringWith(formate: "MMM-yyyy")
+        idx = displayMonths.firstIndex { $0 == newDateMonth }
+        if idx != nil {
+            self.viewModel.selectedMonthIndex = idx!
+            goToPage(index: idx!, animated: false)
+            monthSelectorView.updateSelectedMonth()
+        }
     }
 }
 
