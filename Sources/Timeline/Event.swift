@@ -1,8 +1,8 @@
 import UIKit
 
 public final class Event: EventDescriptor {
+    public var apptsCount: Int = 0
     public var appointmentIds: [Int] = []
-    
     public var isTimeOff: Bool = false
     public var isCounterEvent: Bool = false
     public var timeOffColor: UIColor = UIColor(hex: "#2E90FA14").withAlphaComponent(0.20)

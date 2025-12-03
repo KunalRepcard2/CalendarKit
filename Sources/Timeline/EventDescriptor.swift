@@ -14,6 +14,7 @@ public protocol EventDescriptor: AnyObject {
     var editedEvent: EventDescriptor? {get set}
     var isTimeOff: Bool {get set}
     var isCounterEvent: Bool {get set}
+    var apptsCount: Int {get set}
     var timeOffColor: UIColor {get set}
     var appointmentIds: [Int] {get set}
     var isUnassigned: Bool {get set}

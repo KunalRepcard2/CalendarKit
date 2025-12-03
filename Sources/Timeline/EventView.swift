@@ -61,19 +61,14 @@ open class EventView: UIView {
     private func configure() {
         clipsToBounds = false
         color = tintColor
-        addSubview(textLabel)
         addSubview(verticalLine)
+        addSubview(textLabel)
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         //        for (idx, handle) in eventResizeHandles.enumerated() {
         //            handle.tag = idx
         //            addSubview(handle)
         //        }
-        NSLayoutConstraint.activate([
-               textLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-               textLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-               textLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-               textLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
-           ])
+        
     }
     
     public func updateWithDescriptor(event: EventDescriptor) {
@@ -143,7 +138,8 @@ open class EventView: UIView {
                 stripedView.stripeColor = event.timeOffColor
             }
         } else if event.isCounterEvent {
-            textLabel.text = "+\(event.appointmentIds.count) "
+            //textLabel.text = "+\(event.appointmentIds.count) "
+            textLabel.text = "   +\(event.apptsCount - 5) "
             textLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
             textLabel.textAlignment = .center
             textLabel.textColor = .black
@@ -192,11 +188,26 @@ open class EventView: UIView {
     override open func layoutSubviews() {
         super.layoutSubviews()
         
+        
         let lineWidth: CGFloat = 4
         verticalLine.frame = CGRect(x: 0, y: 0, width: lineWidth, height: bounds.height)
-        textLabel.frame = CGRect(x: 8, y: 0, width: bounds.width - 8, height: bounds.height > 21 ? 21 : bounds.height)
+        textLabel.frame = CGRect(x: 8, y: 0, width: self.frame.width - 8, height: bounds.height > 21 ? 21 : bounds.height)
         stripedView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         avatarStack.frame = CGRect(x: 8, y: textLabel.frame.height + 2, width: bounds.width - 8, height: 20)
+        
+        
+        self.contentMode = .left
+        textLabel.contentMode = .left
+
+        NSLayoutConstraint.activate([
+            textLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            textLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
+            textLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            textLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
+        ])
+        textLabel.textAlignment = .left
+        textLabel.setContentHuggingPriority(.required, for: .horizontal)
+        textLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         //        textLabel.frame = {
         //            if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {

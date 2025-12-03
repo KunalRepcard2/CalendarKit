@@ -499,6 +499,7 @@ public final class TimelineView: UIView {
                 let totalSameStartTimeCount = Double(group.count)
                 let isCountEvent = totalSameStartTimeCount > Double(maxEventCount)
                 let eventCount = !isCountEvent ? Double(totalSameStartTimeCount) : Double(maxEventCount)+1
+                counterEventLayout.removeAll()
                 for (indexEvent, event) in group.enumerated() {
                     if indexEvent < maxEventCount {
                         let startY = dateToY(event.descriptor.dateInterval.start)
