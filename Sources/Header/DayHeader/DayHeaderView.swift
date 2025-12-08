@@ -29,7 +29,7 @@ public final class DayHeaderView: CalHeaderView {
         return separator
     }()
     
-    override init(calendar: Calendar) {
+    override public init(calendar: Calendar) {
         let swipeLabel = SwipeLabelView(calendar: calendar)
         self.swipeLabelView = swipeLabel
         super.init(calendar: calendar)
@@ -48,7 +48,7 @@ public final class DayHeaderView: CalHeaderView {
         state?.move(to: selectedDate)
     }
     
-    func setExpandCompletion(_ block: @escaping (Date) -> Void) {
+    public func setExpandCompletion(_ block: @escaping (Date) -> Void) {
         self.swipeLabelView.clickCompletion = block
     }
     
