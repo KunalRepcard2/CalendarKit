@@ -116,7 +116,7 @@ private extension MonthHeaderView {
         pagingViewController.setViewControllers([vc], direction: direction, animated: animated) { completed in
             if completed {
                 self.updateHeightAsPerRow()
-                self.handleMonthChangeDateSelection(currentVC: vc)
+                self.handleMonthChangeDateSelection(currentVC: vc, pageViewController: nil)
             }
         }
     }
@@ -184,6 +184,7 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
     }
     
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        pageViewController.view.isUserInteractionEnabled = false
         (pendingViewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(style.daySelector)}
     }
 
@@ -191,16 +192,17 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
                             didFinishAnimating finished: Bool,
                             previousViewControllers: [UIViewController],
                             transitionCompleted completed: Bool) {
-       
+        
         guard completed, let currentVC = pageViewController.viewControllers?.first as? MonthSelectorController else { return }
         self.viewModel.selectedMonthIndex = currentVC.pageIndex
         self.monthSelectorView.updateSelectedMonth()
         self.updateHeightAsPerRow()
-        handleMonthChangeDateSelection(currentVC: currentVC)
+        handleMonthChangeDateSelection(currentVC: currentVC, pageViewController: pageViewController)
     }
     
-    private func handleMonthChangeDateSelection(currentVC: MonthSelectorController) {
+    private func handleMonthChangeDateSelection(currentVC: MonthSelectorController, pageViewController: UIPageViewController?) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            pageViewController?.view.isUserInteractionEnabled = true
             let monthRepresentDate = currentVC.monthRepresentDate.stringWith(formate: "yyyy-MM")
             if monthRepresentDate != Date().stringWith(formate: "yyyy-MM") {
                 let firstDate = monthRepresentDate + "-01"
