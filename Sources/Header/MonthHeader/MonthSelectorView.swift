@@ -144,9 +144,14 @@ private extension MonthSelectorView {
             monthView.tag = index
             monthView.onMonthButtonTap = {
                 print("Tapped: \(dtStr)  - \(index)")
-                self.viewModel.selectedMonthIndex = index
-                self.updateSelectedMonth()
-                self.onChangeOfMonth?(index)
+                if self.viewModel.selectedMonthIndex == index {
+                    self.updateSelection()
+                } else {
+                    self.viewModel.selectedMonthIndex = index
+                    self.updateSelectedMonth()
+                    self.onChangeOfMonth?(index)
+                }
+                
             }
             
             monthView.setContentHuggingPriority(.required, for: .horizontal)
@@ -239,6 +244,7 @@ public class MonthButton : UIView {
     }
     
     @objc private func handleTap() {
+        //if isSelected { return }
         self.monthLabel.alpha = 0.5
         self.backgroundColor = .gray.withAlphaComponent(0.3)
         onMonthButtonTap?()
