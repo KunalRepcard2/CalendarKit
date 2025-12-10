@@ -23,6 +23,7 @@ public final class DayHeaderView: CalHeaderView {
     private var currentWeekdayIndex = -1  
     
     private var swipeLabelView: SwipeLabelView
+    private var dateHeaderClickCompletion: ((Date?) -> Void)?
     private lazy var separator: UIView = {
         let separator = UIView()
         separator.backgroundColor = SystemColors.systemSeparator
@@ -50,6 +51,10 @@ public final class DayHeaderView: CalHeaderView {
     
     public func setExpandCompletion(_ block: @escaping (Date) -> Void) {
         self.swipeLabelView.clickCompletion = block
+    }
+    
+    public func setDateClickCompletion(_ block: @escaping (Date?) -> Void) {
+        self.dateHeaderClickCompletion = block
     }
     
     private func configure() {
@@ -206,6 +211,7 @@ extension DayHeaderView : DaySelectorViewDelegate {
     public func dateSelectorDidSelectDate(_ date: Date) {
         state?.move(to: date)
         self.selectedDate = date
+        self.dateHeaderClickCompletion?(date)
     }
     
     public func daySelectorShouldShowDotOn(date: Date) -> Bool {
