@@ -195,6 +195,7 @@ extension DayHeaderView: UIPageViewControllerDataSource, UIPageViewControllerDel
             selector.selectedIndex = currentWeekdayIndex
             if let selectedDate = selector.selectedDate {
                 state?.client(client: self, didMoveTo: selectedDate)
+                self.dateHeaderClickCompletion?(selectedDate)
             }
         }
         // Deselect all the views but the currently visible one
