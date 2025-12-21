@@ -43,10 +43,10 @@ public final class DayHeaderView: CalHeaderView {
         pageC.reloadDots()
     }
     
-    public override func reloadOnDateChange(isManualMove: Bool) {
+    public override func reloadOnDateChange() {
         configurePagingViewController()
         reloadDotsOnPage()
-        state?.move(to: selectedDate, isManualMove: isManualMove)
+        state?.move(to: selectedDate)
     }
     
     public func setExpandCompletion(_ block: @escaping (Date) -> Void) {
@@ -209,10 +209,9 @@ extension DayHeaderView: UIPageViewControllerDataSource, UIPageViewControllerDel
 
 // MARK: DaySelectorViewDelegate
 extension DayHeaderView : DaySelectorViewDelegate {
-    public func dateSelectorDidSelectDate(_ date: Date, isManualMove: Bool) {
-        //state?.move(to: date)
+    public func dateSelectorDidSelectDate(_ date: Date) {
+        state?.move(to: date)
         self.selectedDate = date
-        self.reloadOnDateChange(isManualMove: isManualMove)
         self.dateHeaderClickCompletion?(date)
     }
     

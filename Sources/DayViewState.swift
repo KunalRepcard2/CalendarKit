@@ -17,11 +17,9 @@ public final class DayViewState {
         self.selectedDate = date
     }
 
-    public func move(to date: Date, isManualMove: Bool = true) {
+    public func move(to date: Date) {
         let date = date.dateOnly(calendar: calendar)
-        if isManualMove {
-            notify(clients: clients, moveTo: date)
-        }
+        notify(clients: clients, moveTo: date)
         selectedDate = date
     }
 

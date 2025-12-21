@@ -123,25 +123,23 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
     
     // MARK: - Swipe handler
     @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.state == .ended {
-            switch gesture.direction {
-            case .left:
-                // Next day
-                if let nextDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) {
-                    move(from: currentDate, to: nextDate)
-                    self.delegate?.timelinePager(timelinePager: self, didMoveTo: nextDate)
-                    currentDate = nextDate
-                }
-            case .right:
-                // Previous day
-                if let previousDate = Calendar.current.date(byAdding: .day, value: -1, to: currentDate) {
-                    move(from: currentDate, to: previousDate)
-                    self.delegate?.timelinePager(timelinePager: self, didMoveTo: previousDate)
-                    currentDate = previousDate
-                }
-            default:
-                break
+        switch gesture.direction {
+        case .left:
+            // Next day
+            if let nextDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) {
+                //move(from: currentDate, to: nextDate)
+                self.delegate?.timelinePager(timelinePager: self, didMoveTo: nextDate)
+                currentDate = nextDate
             }
+        case .right:
+            // Previous day
+            if let previousDate = Calendar.current.date(byAdding: .day, value: -1, to: currentDate) {
+                //move(from: currentDate, to: previousDate)
+                self.delegate?.timelinePager(timelinePager: self, didMoveTo: previousDate)
+                currentDate = previousDate
+            }
+        default:
+            break
         }
     }
 
@@ -508,50 +506,6 @@ public final class TimelinePagerView: UIView, UIGestureRecognizerDelegate, UIScr
         }
     }
 
-    // MARK: DayViewStateUpdating
-    public func silentMove(from oldDate: Date, to newDate: Date) {
-        currentDate = newDate
-        let oldDate = oldDate.dateOnly(calendar: calendar)
-        let newDate = newDate.dateOnly(calendar: calendar)
-        let newController = configureTimelineController(date: newDate)
-
-        delegate?.timelinePager(timelinePager: self, willMoveTo: newDate)
-
-        func completionHandler(_ completion: Bool) {
-            DispatchQueue.main.async { [self] in
-                // Fix for the UIPageViewController issue: https://stackoverflow.com/questions/12939280/uipageviewcontroller-navigates-to-wrong-page-with-scroll-transition-style
-
-                let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
-                let direction: UIPageViewController.NavigationDirection = leftToRight ? .reverse : .forward
-
-                self.pagingViewController.setViewControllers([newController],
-                                                             direction: direction,
-                                                             animated: false,
-                                                             completion: nil)
-
-                self.pagingViewController.viewControllers?.first?.view.setNeedsLayout()
-                self.scrollToFirstEventIfNeeded(animated: true)
-                self.delegate?.timelinePager(timelinePager: self, didMoveTo: newDate)
-            }
-        }
-
-        if newDate < oldDate {
-            let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
-            let direction: UIPageViewController.NavigationDirection = leftToRight ? .reverse : .forward
-            pagingViewController.setViewControllers([newController],
-                                                    direction: direction,
-                                                    animated: true,
-                                                    completion: completionHandler(_:))
-        } else if newDate > oldDate {
-            let leftToRight = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .leftToRight
-            let direction: UIPageViewController.NavigationDirection = leftToRight ? .forward : .reverse
-            pagingViewController.setViewControllers([newController],
-                                                    direction: direction,
-                                                    animated: true,
-                                                    completion: completionHandler(_:))
-        }
-    }
-    
     // MARK: UIPageViewControllerDataSource
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {

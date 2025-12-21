@@ -21,14 +21,13 @@ public class CalHeaderView: UIView {
     private(set) var style = DayHeaderStyle()
   
     public var headerDelegate: CalHeaderViewDelegate?
-    public var selectedDate: Date = Date()
-//    {
-//        didSet {
-//            if oldValue != selectedDate {
-//                reloadOnDateChange()
-//            }
-//        }
-//    }
+    public var selectedDate: Date = Date() {
+        didSet {
+            if oldValue != selectedDate {
+                reloadOnDateChange()
+            }
+        }
+    }
     
     let pagingViewController = UIPageViewController(transitionStyle: .scroll,
                                                     navigationOrientation: .horizontal,
@@ -51,7 +50,7 @@ public class CalHeaderView: UIView {
     }
     
     // change in selected date change
-    public func reloadOnDateChange(isManualMove: Bool) { }
+    public func reloadOnDateChange() { }
     
     public func reloadDotsOnPage() { }
     
@@ -61,7 +60,7 @@ public class CalHeaderView: UIView {
 }
 
 public protocol DaySelectorViewDelegate: AnyObject {
-    func dateSelectorDidSelectDate(_ date: Date, isManualMove: Bool)
+    func dateSelectorDidSelectDate(_ date: Date)
     func daySelectorShouldShowDotOn(date: Date) -> Bool
 }
 
