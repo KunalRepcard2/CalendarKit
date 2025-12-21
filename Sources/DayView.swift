@@ -64,8 +64,10 @@ public class DayView: UIView, TimelinePagerViewDelegate {
     public func shouldExpandToMonth(_ expand: Bool) {
         if expand {
             self.monthHeaderView.selectedDate = self.dayHeaderView.selectedDate
+            self.monthHeaderView.reloadOnDateChange(isManualMove: true)
         } else {
             self.dayHeaderView.selectedDate = self.monthHeaderView.selectedDate
+            self.dayHeaderView.reloadOnDateChange(isManualMove: true)
         }
         self.isMonthHeaderActive = expand
     }
@@ -169,9 +171,15 @@ public class DayView: UIView, TimelinePagerViewDelegate {
             newState.move(to: date)
             state = newState
         }
-        self.dayHeaderView.selectedDate = date
-        self.monthHeaderView.selectedDate = date
-        
+        if date != dayHeaderView.selectedDate {
+            self.dayHeaderView.selectedDate = date
+            self.dayHeaderView.reloadOnDateChange(isManualMove: true)
+            
+        }
+        if date != monthHeaderView.selectedDate {
+            self.monthHeaderView.selectedDate = date
+            self.monthHeaderView.reloadOnDateChange(isManualMove: true)
+        }
         self.dayHeaderView.headerDelegate = self
         self.monthHeaderView.headerDelegate = self
         

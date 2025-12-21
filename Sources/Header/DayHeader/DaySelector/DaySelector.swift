@@ -164,7 +164,7 @@ public final class DaySelector: CalHeaderDaySelecterView {
     
     @objc private func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
         if let item = sender.view as? DaySelectorItemProtocol {
-            delegate?.dateSelectorDidSelectDate(item.date)
+            delegate?.dateSelectorDidSelectDate(item.date, isManualMove: false)
         }
     }
 }

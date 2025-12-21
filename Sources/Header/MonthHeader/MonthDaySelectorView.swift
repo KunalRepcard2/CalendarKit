@@ -61,12 +61,12 @@ public class MonthDaySelectorView: CalHeaderDaySelecterView {
     @objc public func dateLabelDidTap(_ sender: UITapGestureRecognizer) {
         if let cell = sender.view as? MonthCalDateCellLabel,
           let aDate = dateWith(day: cell.dayNumber) {
-            self.delegate?.dateSelectorDidSelectDate(aDate)
+            self.delegate?.dateSelectorDidSelectDate(aDate, isManualMove: false)
         }
     }
     
     public func manualDateTap(aDate: Date) {
-        self.delegate?.dateSelectorDidSelectDate(aDate)
+        self.delegate?.dateSelectorDidSelectDate(aDate, isManualMove: false)
     }
     
     private func initializeViews() {

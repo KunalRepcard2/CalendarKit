@@ -67,7 +67,7 @@ public class MonthHeaderView: CalHeaderView {
         pageC.reloadDots()
     }
     
-    public override func reloadOnDateChange() {
+    public override func reloadOnDateChange(isManualMove: Bool) {
         self.viewModel.calculateSelectedMonthIndex(date: selectedDate)
         self.monthSelectorView.updateSelectedMonth()
         configurePagingViewController()
@@ -218,8 +218,9 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
 
 // MARK: DaySelectorViewDelegate
 extension MonthHeaderView : DaySelectorViewDelegate {
-    public func dateSelectorDidSelectDate(_ date: Date) {
+    public func dateSelectorDidSelectDate(_ date: Date, isManualMove: Bool) {
         self.selectedDate = date
+        self.reloadOnDateChange(isManualMove: isManualMove)
         self.dateClickCompletion?(date)
     }
     
