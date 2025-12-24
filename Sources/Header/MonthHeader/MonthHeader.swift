@@ -168,7 +168,7 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
             selector.pageIndex > 0 else {
             return nil
         }
-        
+        print("---->>>>> viewControllerBefore ---->>>>>")
         return viewControllerAt(index: selector.pageIndex - 1) // previous
     }
     
@@ -178,13 +178,14 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
               selector.pageIndex < self.viewModel.displayMonths.count - 1 else {
             return nil
         }
-        
+        print("---->>>>> viewControllerAfter ---->>>>>")
         let indx = selector.pageIndex + 1
         return viewControllerAt(index: indx) // next
     }
     
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         pageViewController.view.isUserInteractionEnabled = false
+        print("---->>>>> willTransitionTo ---->>>>>")
         (pendingViewControllers as? [MonthSelectorController])?.forEach{$0.updateStyle(style.daySelector)}
     }
 
@@ -192,7 +193,10 @@ extension MonthHeaderView: UIPageViewControllerDataSource, UIPageViewControllerD
                             didFinishAnimating finished: Bool,
                             previousViewControllers: [UIViewController],
                             transitionCompleted completed: Bool) {
-        
+        print("---->>>>> didFinishAnimating ---->>>>> Finished - \(finished), completed - \(completed)")
+        if finished, !completed {
+            pageViewController.view.isUserInteractionEnabled = true
+        }
         guard completed, let currentVC = pageViewController.viewControllers?.first as? MonthSelectorController else { return }
         self.viewModel.selectedMonthIndex = currentVC.pageIndex
         self.monthSelectorView.updateSelectedMonth()
