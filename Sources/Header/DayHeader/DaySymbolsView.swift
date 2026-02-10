@@ -82,15 +82,19 @@ public final class DaySymbolsView: UIView {
             label.text = weekDays[index].0
             label.font = style.font
 
-            if isDisabled {
-                label.textColor = style.disabledColor
-                label.alpha = style.disabledAlpha
-                label.isUserInteractionEnabled = false
-            } else {
-                label.textColor = isWeekend ? style.weekendColor : style.weekDayColor
-                label.alpha = 1.0
-                label.isUserInteractionEnabled = true
-            }
+            label.textColor = isWeekend ? style.weekendColor : style.weekDayColor
+            label.alpha = 1.0
+            label.isUserInteractionEnabled = true
+            
+//            if isDisabled {
+//                label.textColor = style.disabledColor
+//                label.alpha = style.disabledAlpha
+//                label.isUserInteractionEnabled = false
+//            } else {
+//                label.textColor = isWeekend ? style.weekendColor : style.weekDayColor
+//                label.alpha = 1.0
+//                label.isUserInteractionEnabled = true
+//            }
         }
     }
 
