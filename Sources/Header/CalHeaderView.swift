@@ -16,7 +16,7 @@ public protocol CalHeaderViewDelegate: AnyObject {
 
 
 public class CalHeaderView: UIView {
-    public let calendar: Calendar
+    public var calendar: Calendar
     let daySymbolsView: DaySymbolsView
     private(set) var style = DayHeaderStyle()
   
@@ -33,9 +33,9 @@ public class CalHeaderView: UIView {
                                                     navigationOrientation: .horizontal,
                                                     options: nil)
     
-    public init(calendar: Calendar) {
+    public init(calendar: Calendar, disabledWeekdays: [Int] = [], range: ClosedRange<Date>? = nil) {
         self.calendar = calendar
-        self.daySymbolsView = DaySymbolsView(calendar: calendar)
+        self.daySymbolsView = DaySymbolsView(calendar: calendar, disabledWeekdays: disabledWeekdays)
         super.init(frame: .zero)
     }
     

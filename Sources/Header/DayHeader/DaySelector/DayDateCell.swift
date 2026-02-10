@@ -1,6 +1,9 @@
 import UIKit
 
 public final class DayDateCell: UIView, DaySelectorItemProtocol {
+    public var disableDays: [Int] = []
+    public var customDateRange: ClosedRange<Date>?
+    
     public var showDot: Bool = false
     
     private let dateLabel = DateLabel()

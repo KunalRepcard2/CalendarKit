@@ -30,7 +30,7 @@ public class MonthHeaderView: CalHeaderView {
         return separator
     }()
     
-    override public init(calendar: Calendar) {
+    override public init(calendar: Calendar, disabledWeekdays: [Int] = [], range: ClosedRange<Date>? = nil) {
         monthSelectorView = MonthSelectorView()
         super.init(calendar: calendar)
         configure()

@@ -5,6 +5,8 @@ public protocol DaySelectorItemProtocol: AnyObject {
     var selected: Bool {get set}
     var calendar: Calendar {get set}
     var showDot: Bool {get set}
+    var disableDays: [Int] {get set}
+    var customDateRange: ClosedRange<Date>? {get set}
     func reloadDot()
     func updateStyle(_ newStyle: DaySelectorStyle)
 }
@@ -17,6 +19,9 @@ public final class DaySelector: CalHeaderDaySelecterView {
         }
     }
     
+    public var disableWeekDays: [Int] = []
+    public var customDateRange: ClosedRange<Date>?
+
     private func updateItemsCalendar() {
         items.forEach { (item) in
             item.calendar = calendar
@@ -79,7 +84,6 @@ public final class DaySelector: CalHeaderDaySelecterView {
     private func initializeViews<T: UIView>(viewType: T.Type) where T: DaySelectorItemProtocol {
         // Store last selected date
         let lastSelectedDate = selectedDate
-        
         // Remove previous Items
         items.forEach{$0.removeFromSuperview()}
         items.removeAll()
@@ -104,6 +108,8 @@ public final class DaySelector: CalHeaderDaySelecterView {
         for (increment, label) in items.enumerated() {
             let lDate = calendar.date(byAdding: .day, value: increment, to: startDate)!
             label.showDot = self.delegate?.daySelectorShouldShowDotOn(date: lDate) ?? false
+            label.customDateRange = self.customDateRange
+            label.disableDays = self.disableWeekDays
             label.date = lDate
         }
     }

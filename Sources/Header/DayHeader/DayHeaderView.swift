@@ -20,7 +20,9 @@ public final class DayHeaderView: CalHeaderView {
         }
     }
     
-    private var currentWeekdayIndex = -1  
+    private var disabledWeekdays: [Int] = []
+    private var customDateRange: ClosedRange<Date>?
+    private var currentWeekdayIndex = -1
     
     private var swipeLabelView: SwipeLabelView
     private var dateHeaderClickCompletion: ((Date?) -> Void)?
@@ -30,10 +32,12 @@ public final class DayHeaderView: CalHeaderView {
         return separator
     }()
     
-    override public init(calendar: Calendar) {
+    override public init(calendar: Calendar, disabledWeekdays: [Int] = [], range: ClosedRange<Date>? = nil) {
         let swipeLabel = SwipeLabelView(calendar: calendar)
         self.swipeLabelView = swipeLabel
-        super.init(calendar: calendar)
+        self.disabledWeekdays = disabledWeekdays
+        self.customDateRange = range
+        super.init(calendar: calendar, disabledWeekdays: disabledWeekdays, range: range)
         configure()
     }
     
@@ -80,6 +84,8 @@ public final class DayHeaderView: CalHeaderView {
     private func makeSelectorController(startDate: Date) -> DaySelectorController {
         let daySelectorController = DaySelectorController()
         daySelectorController.calendar = calendar
+        daySelectorController.customDateRange = self.customDateRange
+        daySelectorController.disableWeekDays = self.disabledWeekdays
         daySelectorController.transitionToHorizontalSizeClass(currentSizeClass)
         daySelectorController.updateStyle(style.daySelector)
         daySelectorController.startDate = startDate

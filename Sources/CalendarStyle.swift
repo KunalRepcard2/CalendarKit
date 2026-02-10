@@ -52,12 +52,18 @@ public struct DaySelectorStyle {
     
     public var selectedBorderColor = UIColor(hex: "2E90FA")
 
+    public var disabledTextColor: UIColor = .gray
+    public var disabledBackgroundColor: UIColor = .clear
+    public var disabledAlpha: CGFloat = 0.35
+    
     public init() {}
 }
 
 public struct DaySymbolsStyle {
     public var weekendColor = UIColor(hex: "A0A0AB")
     public var weekDayColor = UIColor(hex: "3F3F46")
+    public var disabledColor: UIColor = .gray
+    public var disabledAlpha: CGFloat = 0.4
     public var font = UIFont.systemFont(ofSize: 13)
     public init() {}
 }

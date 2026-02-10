@@ -21,6 +21,24 @@ public final class DaySelectorController: UIViewController {
         }
     }
     
+    public var disableWeekDays: [Int] {
+        get {
+            daySelector.disableWeekDays
+        }
+        set(newValue) {
+            daySelector.disableWeekDays = newValue
+        }
+    }
+    
+    public var customDateRange: ClosedRange<Date>? {
+        get {
+            daySelector.customDateRange
+        }
+        set(newValue) {
+            daySelector.customDateRange = newValue
+        }
+    }
+    
     public var startDate: Date {
         get {
             daySelector.startDate!
